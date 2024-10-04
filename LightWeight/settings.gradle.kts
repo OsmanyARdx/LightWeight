@@ -17,6 +17,13 @@ dependencyResolutionManagement {
         google()
         mavenCentral()
     }
+    versionCatalogs {
+        create("libs") {
+            library("retrofit", "com.squareup.retrofit2:retrofit:2.9.0")
+            library("gson", "com.squareup.retrofit2:converter-gson:2.9.0")
+            // Add more libraries here if needed
+        }
+    }
 }
 
 rootProject.name = "LightWeight"
