@@ -25,8 +25,56 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.lightweight.ui.theme.LightWeightTheme
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.http.GET
+import retrofit2.http.Header
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.launch
+import retrofit2.http.Url
+
+
+data class WgerExercise(
+    val id: Int,
+    val name: String,
+    val description: String,
+    val video: String
+)
+
+data class WgerResponse(
+    val count: Int,
+    val next: String?,
+    val previous: String?,
+    val results: List<WgerExercise>
+)
+
+
+interface WgerApiService {
+    @GET("video/")
+    suspend fun getExercises(
+        @Header("Authorization") token: String
+    ): WgerResponse
+}
+
+object WgerApi {
+    private const val BASE_URL = "https://wger.de/api/v2/"
+
+    val retrofitService: WgerApiService by lazy {
+        Retrofit.Builder()
+            .baseUrl(BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(WgerApiService::class.java)
+    }
+}
+
 
 class MainActivity : ComponentActivity() {
+    private val exercisesList = mutableStateListOf<WgerExercise>()
+    private var showSplashScreen by mutableStateOf(true)
+    private var showExercisesScreen by mutableStateOf(false)
+    private var exercisesText by mutableStateOf("No exercises fetched")
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -40,6 +88,46 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+    private fun fetchExercises() {
+        val token = "Token e5ea4eb8a0915c6e762a157e3924271f05769ade"
+        val api = WgerApi.retrofitService
+
+        lifecycleScope.launch {
+            try {
+                val response = api.getExercises(token)
+                exercisesText = when {
+                    response.results.isEmpty() -> "No exercises available"
+                    else -> response.results.joinToString("\n") { it.video }
+                }
+            } catch (e: Exception) {
+                exercisesText = "Error: ${e.message}"
+            }
+        }
+    }
+}
+
+@Composable
+fun FetchExercisesScreen(exercisesText: String, onFetchExercisesClick: () -> Unit) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+
+        Button(onClick = onFetchExercisesClick) {
+            Text(text = "Fetch Exercises")
+        }
+
+        Spacer(modifier = Modifier.height(20.dp))
+
+        Text(
+            text = exercisesText,
+            fontSize = 18.sp,
+            modifier = Modifier.padding(top = 20.dp)
+        )
     }
 }
 
@@ -129,10 +217,4 @@ fun SplashScreenPreview() {
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun LoginRegisterScreenPreview() {
-    LightWeightTheme {
-        LoginRegisterScreen()
-    }
-}
+
