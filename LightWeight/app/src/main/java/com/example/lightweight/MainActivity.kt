@@ -30,10 +30,20 @@ import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
 import retrofit2.http.Header
 import androidx.lifecycle.lifecycleScope
+import com.google.gson.Gson
 import kotlinx.coroutines.launch
+import retrofit2.http.Body
+import retrofit2.http.Headers
+import retrofit2.http.POST
+import retrofit2.http.Query
 import retrofit2.http.Url
 
 
+
+
+
+
+//Wger API contents here!
 data class WgerExercise(
     val id: Int,
     val name: String,
@@ -47,7 +57,6 @@ data class WgerResponse(
     val previous: String?,
     val results: List<WgerExercise>
 )
-
 
 interface WgerApiService {
     @GET("video/")
@@ -67,13 +76,58 @@ object WgerApi {
             .create(WgerApiService::class.java)
     }
 }
+//Wger API end here!!
+
+
+
+
+//Edeman Nutrition here!!
+data class EdamamResponse(
+    val calories: Int,
+    val totalWeight: Double,
+    val dietLabels: List<String>,
+    val healthLabels: List<String>,
+    val cautions: List<String>
+)
+
+interface EdamamApiService {
+    @Headers("Content-Type: application/json")
+    @POST("nutrition-details")
+    suspend fun getNutritionDetails(
+        @Query("app_id") appId: String,
+        @Query("app_key") appKey: String,
+        @Body body: NutritionRequest
+    ): EdamamResponse
+}
+
+data class NutritionRequest(
+    val title: String,
+    val ingr: List<String>
+)
+
+object EdamamApi {
+    private const val BASE_URL = "https://api.edamam.com/api/"
+
+    val retrofitService: EdamamApiService by lazy {
+        Retrofit.Builder()
+            .baseUrl(BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(EdamamApiService::class.java)
+    }
+}
+//Edeman Nutrition ends here!!!!
+
+
+
+
 
 
 class MainActivity : ComponentActivity() {
     private val exercisesList = mutableStateListOf<WgerExercise>()
     private var showSplashScreen by mutableStateOf(true)
     private var showExercisesScreen by mutableStateOf(false)
-    private var exercisesText by mutableStateOf("No exercises fetched")
+    private var responseText by mutableStateOf("No exercises fetched")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -85,10 +139,16 @@ class MainActivity : ComponentActivity() {
                     SplashScreen(onSplashScreenClick = { showSplashScreen = false })
                 } else {
                     LoginRegisterScreen()
+                    //FetchExercisesScreen(exercisesText = responseText, onFetchExercisesClick = {fetchExercises()})
+                    //FetchNutritionScreen(responseText = responseText, onFetchExercisesClick = {fetchNutrition("Test")})
+
+
                 }
             }
         }
     }
+
+    //Wger exercises test call
     private fun fetchExercises() {
         val token = "Token e5ea4eb8a0915c6e762a157e3924271f05769ade"
         val api = WgerApi.retrofitService
@@ -96,19 +156,55 @@ class MainActivity : ComponentActivity() {
         lifecycleScope.launch {
             try {
                 val response = api.getExercises(token)
-                exercisesText = when {
+                responseText = when {
                     response.results.isEmpty() -> "No exercises available"
                     else -> response.results.joinToString("\n") { it.video }
                 }
             } catch (e: Exception) {
-                exercisesText = "Error: ${e.message}"
+                responseText = "Error: ${e.message}"
             }
         }
     }
+
+
+
+    private fun fetchNutrition(title: String) {
+        val appId = "00415436"
+        val appKey = "3e190e4d02288d5613f049ae81bb4603"
+
+        val ingredients = listOf("50 sausage", "1 pepsi", "1/2 cup sugar")
+
+
+        val edamamBody = NutritionRequest(
+            title = title,
+            ingr = ingredients
+        )
+
+        val edamamApi = EdamamApi.retrofitService
+
+        lifecycleScope.launch {
+            try {
+                val response = edamamApi.getNutritionDetails(appId, appKey, edamamBody)
+
+                responseText = Gson().toJson(response)
+
+            } catch (e: Exception) {
+                responseText = "Error: ${e.message}"
+            }
+        }
+    }
+
+
+
+
+
+
+
+
 }
 
 @Composable
-fun FetchExercisesScreen(exercisesText: String, onFetchExercisesClick: () -> Unit) {
+fun FetchExercisesScreen(responseText: String, onFetchExercisesClick: () -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -124,12 +220,38 @@ fun FetchExercisesScreen(exercisesText: String, onFetchExercisesClick: () -> Uni
         Spacer(modifier = Modifier.height(20.dp))
 
         Text(
-            text = exercisesText,
+            text = responseText,
             fontSize = 18.sp,
             modifier = Modifier.padding(top = 20.dp)
         )
     }
 }
+
+
+@Composable
+fun FetchNutritionScreen(responseText: String, onFetchExercisesClick: () -> Unit) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+
+        Button(onClick = onFetchExercisesClick) {
+            Text(text = "Fetch Nutrition")
+        }
+
+        Spacer(modifier = Modifier.height(20.dp))
+
+        Text(
+            text = responseText,
+            fontSize = 18.sp,
+            modifier = Modifier.padding(top = 20.dp)
+        )
+    }
+}
+
 
 @Composable
 fun SplashScreen(onSplashScreenClick: () -> Unit) {
@@ -184,7 +306,7 @@ fun LoginRegisterScreen() {
 
         // Login Button
         Button(
-            onClick = { /* Login Click action in here*/ },
+            onClick = { },
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFFC0CB)), // Light pink color
             shape = RoundedCornerShape(50),
             modifier = Modifier
@@ -197,7 +319,7 @@ fun LoginRegisterScreen() {
         Spacer(modifier = Modifier.height(20.dp))
         // Register Button
         Button(
-            onClick = { /* Register Click Action in here*/ },
+            onClick = { },
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFADD8E6)),
             shape = RoundedCornerShape(50),
             modifier = Modifier
