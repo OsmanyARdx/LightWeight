@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "125605412286",
+    "project_id": "lightweight-7f989",
+    "storage_bucket": "lightweight-7f989.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:125605412286:android:7c83d2e986fa468b6d8def",
+        "android_client_info": {
+          "package_name": "com.example.lightweight"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCtjnZr86KnqX4DR0YPu-vEIREzBMSbPXQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
