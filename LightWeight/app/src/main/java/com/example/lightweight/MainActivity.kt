@@ -1,6 +1,8 @@
 package com.example.lightweight
 
+import android.content.ContentValues.TAG
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
@@ -30,6 +32,8 @@ import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
 import retrofit2.http.Header
 import androidx.lifecycle.lifecycleScope
+import com.google.firebase.Firebase
+import com.google.firebase.firestore.firestore
 import com.google.gson.Gson
 import kotlinx.coroutines.launch
 import retrofit2.http.Body
@@ -129,6 +133,8 @@ class MainActivity : ComponentActivity() {
     private var showExercisesScreen by mutableStateOf(false)
     private var responseText by mutableStateOf("No exercises fetched")
 
+    val db = Firebase.firestore
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -141,8 +147,6 @@ class MainActivity : ComponentActivity() {
                     LoginRegisterScreen()
                     //FetchExercisesScreen(exercisesText = responseText, onFetchExercisesClick = {fetchExercises()})
                     //FetchNutritionScreen(responseText = responseText, onFetchExercisesClick = {fetchNutrition("Test")})
-
-
                 }
             }
         }
