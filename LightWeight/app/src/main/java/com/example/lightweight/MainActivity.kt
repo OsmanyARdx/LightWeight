@@ -144,7 +144,8 @@ class MainActivity : ComponentActivity() {
                 if (showSplashScreen) {
                     SplashScreen(onSplashScreenClick = { showSplashScreen = false })
                 } else {
-                    LoginRegisterScreen()
+                    //LoginRegisterScreen()
+                    UserScreen()
                     //FetchExercisesScreen(exercisesText = responseText, onFetchExercisesClick = {fetchExercises()})
                     //FetchNutritionScreen(responseText = responseText, onFetchExercisesClick = {fetchNutrition("Test")})
                 }
