@@ -65,6 +65,8 @@ dependencies {
     implementation(libs.converter.gson)
     implementation(libs.androidx.navigation.runtime.ktx)
     implementation(libs.androidx.navigation.compose)
+    implementation("androidx.test.espresso:espresso-core:3.6.1")
+    implementation("androidx.constraintlayout:constraintlayout-compose-android:1.1.0-rc01")
 
 
     testImplementation(libs.junit)
@@ -75,5 +77,12 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
     implementation (libs.firebase.firestore.ktx)
+
+    implementation("androidx.compose.material3:material3:1.1.0") // Material 3
+    implementation("androidx.compose.material:material-icons-extended:1.4.0") // For material icons
+    implementation ("androidx.compose.ui:ui:1.3.0")
+    implementation ("androidx.compose.material:material:1.3.0")
+    implementation ("androidx.compose.ui:ui-tooling-preview:1.3.0")
+    implementation ("androidx.activity:activity-compose:1.7.0")
 
 }
