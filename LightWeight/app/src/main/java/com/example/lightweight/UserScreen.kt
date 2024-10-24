@@ -2,7 +2,9 @@ package com.example.lightweight
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -10,8 +12,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.lightweight.ui.theme.LightWeightTheme
 import kotlinx.coroutines.launch
 import com.example.lightweight.ui.theme.softGreen
 
@@ -28,7 +32,7 @@ fun UserScreen() {
                 modifier = Modifier
                     .fillMaxHeight()
                     .width(240.dp)
-                    .background(softGreen)
+                    .background(MaterialTheme.colorScheme.background)
             ) {
                 DrawerContent { scope.launch { drawerState.close() } }
             }
@@ -38,19 +42,27 @@ fun UserScreen() {
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color.White)
+                .background(
+                    color = MaterialTheme.colorScheme.primary,
+                    shape = RoundedCornerShape(16.dp)
+                )
         ) {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(Color.White),
+                    .background(MaterialTheme.colorScheme.surface),
                 horizontalAlignment = Alignment.Start,
                 verticalArrangement = Arrangement.Top
             ) {
                 // Top App Bar
                 TopAppBar(
                     title = {
-                        Text(text = "LightWeight", fontSize = 20.sp, fontWeight = FontWeight.Bold)
+                        Text(
+                            text = "LightWeight",
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.White
+                        )
                     },
                     navigationIcon = {
                         IconButton(onClick = { scope.launch { drawerState.open() } }) {
@@ -66,7 +78,8 @@ fun UserScreen() {
                     colors = TopAppBarDefaults.smallTopAppBarColors(
                         containerColor = softGreen,
                         titleContentColor = Color.White
-                    )
+                    ),
+                    modifier = Modifier.fillMaxWidth()
                 )
 
                 Row(
@@ -92,12 +105,12 @@ fun UserScreen() {
                             text = "Welcome, Test Test!",
                             fontSize = 20.sp,
                             fontWeight = FontWeight.Bold,
-                            color = Color.Black
+                            color = MaterialTheme.colorScheme.onSurface
                         )
                         Text(
                             text = "Lower Text!",
                             fontSize = 16.sp,
-                            color = Color.Gray
+                            color = MaterialTheme.colorScheme.onSurface
                         )
                     }
                 }
@@ -113,7 +126,7 @@ fun UserScreen() {
                 ){
                     Spacer(modifier = Modifier.width(32.dp))
 
-                    Text(text = "Progress will go here...", fontSize = 16.sp)
+                    Text(text = "Progress will go here...", fontSize = 16.sp, color = MaterialTheme.colorScheme.onSurface)
 
                     Spacer(modifier = Modifier.width(32.dp))
                 }
@@ -159,4 +172,11 @@ fun UserScreen() {
             }
         }
     }
+}
+
+
+@Preview(showBackground = true)
+@Composable
+fun UserScreenPreview() {
+        UserScreen()
 }

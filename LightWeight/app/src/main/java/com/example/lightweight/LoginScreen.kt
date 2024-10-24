@@ -75,7 +75,7 @@ fun LoginScreen() {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(color = limeGreen) // Set the box background to lime green
+                    .background(color = limeGreen)
             ) {
 
 
