@@ -2,7 +2,6 @@ package com.example.lightweight
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -18,6 +17,8 @@ import androidx.compose.ui.unit.sp
 import com.example.lightweight.ui.theme.LightWeightTheme
 import kotlinx.coroutines.launch
 import com.example.lightweight.ui.theme.softGreen
+import androidx.compose.ui.draw.clip
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -38,7 +39,7 @@ fun UserScreen() {
             }
         }
     ) {
-        //Active screen
+        // Active screen
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -54,33 +55,46 @@ fun UserScreen() {
                 horizontalAlignment = Alignment.Start,
                 verticalArrangement = Arrangement.Top
             ) {
-                // Top App Bar
-                TopAppBar(
-                    title = {
-                        Text(
-                            text = "LightWeight",
-                            fontSize = 20.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = Color.White
+                // Top App Bar wrapped inside a rounded box
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 8.dp)
+                        .clip(RoundedCornerShape(24.dp))
+                        .background(
+                            color = softGreen,
+                            shape = RoundedCornerShape(24.dp)
                         )
-                    },
-                    navigationIcon = {
-                        IconButton(onClick = { scope.launch { drawerState.open() } }) {
-                            Image(
-                                painter = painterResource(id = R.drawable.light_weight_logo),
-                                contentDescription = "Profile Image",
-                                modifier = Modifier
-                                    .size(40.dp)
-                                    .padding(4.dp)
+                ) {
+                    TopAppBar(
+                        title = {
+                            Text(
+                                text = "LightWeight",
+                                fontSize = 20.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color.White
                             )
-                        }
-                    },
-                    colors = TopAppBarDefaults.smallTopAppBarColors(
-                        containerColor = softGreen,
-                        titleContentColor = Color.White
-                    ),
-                    modifier = Modifier.fillMaxWidth()
-                )
+                        },
+                        navigationIcon = {
+                            IconButton(onClick = { scope.launch { drawerState.open() } }) {
+                                Image(
+                                    painter = painterResource(id = R.drawable.user),
+                                    contentDescription = "Profile Image",
+                                    modifier = Modifier
+                                        .size(40.dp)
+                                        .padding(4.dp)
+                                )
+                            }
+                        },
+                        colors = TopAppBarDefaults.smallTopAppBarColors(
+                            containerColor = Color.Transparent,
+                            titleContentColor = Color.White
+                        ),
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
 
                 Row(
                     modifier = Modifier
@@ -123,10 +137,14 @@ fun UserScreen() {
                         .padding(0.dp),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
-                ){
+                ) {
                     Spacer(modifier = Modifier.width(32.dp))
 
-                    Text(text = "Progress will go here...", fontSize = 16.sp, color = MaterialTheme.colorScheme.onSurface)
+                    Text(
+                        text = "Progress will go here...",
+                        fontSize = 16.sp,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
 
                     Spacer(modifier = Modifier.width(32.dp))
                 }
@@ -139,29 +157,43 @@ fun UserScreen() {
                         .padding(0.dp),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
-                ){
+                ) {
 
                     Spacer(modifier = Modifier.width(32.dp))
 
-                    IconButton(onClick = { /* Bring to scale screen logic here */ }) {
+                    IconButton(
+                        onClick = { /* Bring to exercise screen logic here */ },
+                        modifier = Modifier
+                            .size(80.dp)
+                            .background(
+                                color = softGreen,
+                                shape = RoundedCornerShape(10.dp)
+                            )
+                            .padding(8.dp)
+                    ) {
                         Image(
                             painter = painterResource(id = R.drawable.scale),
-                            contentDescription = "Scale Icon",
+                            contentDescription = "Exercise Icon",
                             modifier = Modifier
                                 .size(40.dp)
-                                .padding(4.dp)
                         )
                     }
 
-                    Spacer(modifier = Modifier.width(32.dp))
-
-                    IconButton(onClick = { /* Bring to exercise screen logic here */ }) {
+                    IconButton(
+                        onClick = { /* Bring to exercise screen logic here */ },
+                        modifier = Modifier
+                            .size(80.dp)
+                            .background(
+                                color = softGreen,
+                                shape = RoundedCornerShape(10.dp)
+                            )
+                            .padding(8.dp)
+                    ) {
                         Image(
                             painter = painterResource(id = R.drawable.exercise),
-                            contentDescription = "Scale Icon",
+                            contentDescription = "Exercise Icon",
                             modifier = Modifier
                                 .size(40.dp)
-                                .padding(4.dp)
                         )
                     }
 
@@ -174,9 +206,10 @@ fun UserScreen() {
     }
 }
 
-
 @Preview(showBackground = true)
 @Composable
 fun UserScreenPreview() {
+    LightWeightTheme {
         UserScreen()
+    }
 }

@@ -216,6 +216,7 @@ fun LightWeightApp() {
             }
             composable("register") {
                 //RegisterScreen()
+                UserScreen()
             }
             composable("user_screen") {
                 UserScreen()
