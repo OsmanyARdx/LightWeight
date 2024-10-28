@@ -19,10 +19,16 @@ import retrofit2.http.Header
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import coil.compose.rememberImagePainter
-
+import com.example.lightweight.ui.theme.softGreen
+import kotlinx.coroutines.launch
 
 
 /**
@@ -94,6 +100,7 @@ object WgerApi {
 
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ExerciseScreen(navController: NavController) {
     var exercises by remember { mutableStateOf<List<WgerExercise>>(emptyList()) }
@@ -117,83 +124,159 @@ fun ExerciseScreen(navController: NavController) {
         }
     }
 
+    val drawerState = rememberDrawerState(DrawerValue.Closed)
+    val scope = rememberCoroutineScope()
 
-    Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
-        when {
-            loading -> {
-                CircularProgressIndicator()
-                Spacer(modifier = Modifier.height(16.dp))
-                Text(
-                    text = "Loading exercises...",
-                    fontSize = 18.sp,
-                    color = MaterialTheme.colorScheme.onSurface
-                )
+    ModalNavigationDrawer(
+        drawerState = drawerState,
+        drawerContent = {
+            Box(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .width(240.dp)
+                    .background(softGreen)
+            ) {
+                DrawerContent { scope.launch { drawerState.close() } }
             }
-            errorMessage != null -> {
-                Text(
-                    text = errorMessage!!,
-                    fontSize = 18.sp,
-                    color = MaterialTheme.colorScheme.error
+        }
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(
+                    color = MaterialTheme.colorScheme.primary,
+                    shape = RoundedCornerShape(16.dp)
                 )
-            }
-            else -> {
-                Text(
-                    text = "Exercises:",
-                    fontSize = 18.sp,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    fontWeight = FontWeight.Bold
-                )
-
-                if (exercises.isEmpty()) {
-                    Text(
-                        text = "No exercises available.",
-                        fontSize = 16.sp,
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
-                } else {
-                    LazyColumn {
-                        items(exercises) { exercise ->
-                            Column(modifier = Modifier.padding(vertical = 8.dp)) {
-                                Text(
-                                    text = "Exercise name: ${extractExerciseName(exercise.image.toString())}",
-                                    fontSize = 16.sp,
-                                    color = MaterialTheme.colorScheme.onSurface,
-                                    fontWeight = FontWeight.Bold
-                                )
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(MaterialTheme.colorScheme.surface),
+                horizontalAlignment = Alignment.Start,
+                verticalArrangement = Arrangement.Top
+            ) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 8.dp, vertical = 8.dp)
+                        .clip(RoundedCornerShape(24.dp))
+                        .background(
+                            color = softGreen,
+                            shape = RoundedCornerShape(24.dp)
+                        )
+                ) {
+                    TopAppBar(
+                        title = {
+                            Text(
+                                text = "Exercise Time",
+                                fontSize = 20.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color.White
+                            )
+                        },
+                        navigationIcon = {
+                            IconButton(onClick = { scope.launch { drawerState.open() } }) {
                                 Image(
-                                    painter = rememberImagePainter(
-                                        data = exercise.image,
-                                        builder = {
-                                            placeholder(R.drawable.user)
-                                        }
-                                    ),
-                                    contentDescription = null,
-                                    modifier = Modifier.fillMaxWidth().height(200.dp)
+                                    painter = painterResource(id = R.drawable.user),
+                                    contentDescription = "Profile Image",
+                                    modifier = Modifier
+                                        .size(40.dp)
+                                        .padding(4.dp)
                                 )
+                            }
+                        },
+                        colors = TopAppBarDefaults.smallTopAppBarColors(
+                            containerColor = Color.Transparent,
+                            titleContentColor = Color.White
+                        ),
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+
+                Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+                    when {
+                        loading -> {
+                            CircularProgressIndicator()
+                            Spacer(modifier = Modifier.height(16.dp))
+                            Text(
+                                text = "Loading exercises...",
+                                fontSize = 18.sp,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                        }
+
+                        errorMessage != null -> {
+                            Text(
+                                text = errorMessage!!,
+                                fontSize = 18.sp,
+                                color = MaterialTheme.colorScheme.error
+                            )
+                        }
+
+                        else -> {
+                            Text(
+                                text = "Exercises:",
+                                fontSize = 18.sp,
+                                color = MaterialTheme.colorScheme.onSurface,
+                                fontWeight = FontWeight.Bold
+                            )
+
+                            if (exercises.isEmpty()) {
+                                Text(
+                                    text = "No exercises available.",
+                                    fontSize = 16.sp,
+                                    color = MaterialTheme.colorScheme.onSurface
+                                )
+                            } else {
+                                LazyColumn {
+                                    items(exercises) { exercise ->
+                                        Column(modifier = Modifier.padding(vertical = 8.dp).background(MaterialTheme.colorScheme.primaryContainer)) {
+                                            Text(
+                                                text = "Exercise name: ${
+                                                    extractExerciseName(
+                                                        exercise.image.toString()
+                                                    )
+                                                }",
+                                                fontSize = 16.sp,
+                                                color = MaterialTheme.colorScheme.onSurface,
+                                                fontWeight = FontWeight.Bold
+                                            )
+                                            Image(
+                                                painter = rememberImagePainter(
+                                                    data = exercise.image,
+                                                    builder = {
+                                                        placeholder(R.drawable.user)
+                                                    }
+                                                ),
+                                                contentDescription = null,
+                                                modifier = Modifier.fillMaxWidth().height(200.dp)
+                                            )
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    Text(
+                        text = "Raw Response:",
+                        fontSize = 18.sp,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        fontWeight = FontWeight.Bold
+                    )
+
+                    Text(
+                        text = rawResponse,
+                        modifier = Modifier.fillMaxWidth().heightIn(min = 100.dp),
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
                 }
             }
         }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Text(
-            text = "Raw Response:",
-            fontSize = 18.sp,
-            color = MaterialTheme.colorScheme.onSurface,
-            fontWeight = FontWeight.Bold
-        )
-
-        Text(
-            text = rawResponse,
-            modifier = Modifier.fillMaxWidth().heightIn(min = 100.dp),
-            style = MaterialTheme.typography.bodyMedium,
-        )
     }
 }
-
 
 fun extractExerciseName(imageUrl: String): String {
     return imageUrl.split("/").last()

@@ -184,6 +184,19 @@ fun LoginRegisterScreen(navController: NavController) {
         ) {
             Text(text = "Register", fontSize = 18.sp)
         }
+
+        Spacer(modifier = Modifier.height(20.dp))
+
+        Button(
+            onClick = { navController.navigate("user_screen") },
+            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.onPrimaryContainer),
+            shape = RoundedCornerShape(50),
+            modifier = Modifier
+                .width(250.dp)
+                .height(70.dp)
+        ) {
+            Text(text = "Test User", fontSize = 18.sp)
+        }
     }
 }
 

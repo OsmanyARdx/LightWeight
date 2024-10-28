@@ -5,7 +5,9 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -72,23 +74,16 @@ fun LoginScreen() {
             )
 
             Spacer(modifier = Modifier.height(16.dp))
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(color = limeGreen)
-            ) {
-
 
                 Button(
                     onClick = {
                         //Logic for login
                     },
                     modifier = Modifier.fillMaxWidth(),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)
+                    colors = ButtonDefaults.buttonColors(containerColor = limeGreen)
                 ) {
                     Text("Login")
                 }
-            }
         }
     }
 }

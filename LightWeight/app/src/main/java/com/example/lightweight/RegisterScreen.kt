@@ -16,6 +16,7 @@ import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
+import com.example.lightweight.ui.theme.limeGreen
 
 
 @Composable
@@ -88,7 +89,7 @@ fun RegisterScreen(onRegistrationSuccess: () -> Unit) {
                 painter = painterResource(id = R.drawable.light_weight_logo),
                 contentDescription = "Profile Image",
                 modifier = Modifier
-                    .size(250.dp)
+                    .size(170.dp)
                     .padding(4.dp)
             )
 
@@ -185,7 +186,7 @@ fun RegisterScreen(onRegistrationSuccess: () -> Unit) {
                     performRegistration()
                 },
                 modifier = Modifier.fillMaxWidth(),
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFADD8E6))
+                colors = ButtonDefaults.buttonColors(containerColor = limeGreen)
             ) {
                 Text("Register")
             }
