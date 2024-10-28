@@ -42,7 +42,6 @@ fun UserScreen(navController: NavHostController) {
             }
         }
     ) {
-        // Active screen
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -58,7 +57,6 @@ fun UserScreen(navController: NavHostController) {
                 horizontalAlignment = Alignment.Start,
                 verticalArrangement = Arrangement.Top
             ) {
-                // Top App Bar wrapped inside a rounded box
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()

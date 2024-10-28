@@ -84,7 +84,7 @@ dependencies {
     implementation ("androidx.compose.material:material:1.3.0")
     implementation ("androidx.compose.ui:ui-tooling-preview:1.3.0")
     implementation ("androidx.activity:activity-compose:1.7.0")
-
+    implementation ("io.coil-kt:coil-compose:2.4.0")
 
     implementation ("androidx.compose.foundation:foundation:<version>")
 

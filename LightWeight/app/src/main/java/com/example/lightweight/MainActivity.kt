@@ -50,89 +50,6 @@ import retrofit2.http.Url
 
 
 
-
-
-
-//Wger API contents here!
-data class WgerExercise(
-    val id: Int,
-    val name: String,
-    val description: String,
-    val video: String
-)
-
-data class WgerResponse(
-    val count: Int,
-    val next: String?,
-    val previous: String?,
-    val results: List<WgerExercise>
-)
-
-interface WgerApiService {
-    @GET("video/")
-    suspend fun getExercises(
-        @Header("Authorization") token: String
-    ): WgerResponse
-}
-
-object WgerApi {
-    private const val BASE_URL = "https://wger.de/api/v2/"
-
-    val retrofitService: WgerApiService by lazy {
-        Retrofit.Builder()
-            .baseUrl(BASE_URL)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-            .create(WgerApiService::class.java)
-    }
-}
-//Wger API end here!!
-
-
-
-
-//Edeman Nutrition here!!
-data class EdamamResponse(
-    val calories: Int,
-    val totalWeight: Double,
-    val dietLabels: List<String>,
-    val healthLabels: List<String>,
-    val cautions: List<String>
-)
-
-interface EdamamApiService {
-    @Headers("Content-Type: application/json")
-    @POST("nutrition-details")
-    suspend fun getNutritionDetails(
-        @Query("app_id") appId: String,
-        @Query("app_key") appKey: String,
-        @Body body: NutritionRequest
-    ): EdamamResponse
-}
-
-data class NutritionRequest(
-    val title: String,
-    val ingr: List<String>
-)
-
-object EdamamApi {
-    private const val BASE_URL = "https://api.edamam.com/api/"
-
-    val retrofitService: EdamamApiService by lazy {
-        Retrofit.Builder()
-            .baseUrl(BASE_URL)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-            .create(EdamamApiService::class.java)
-    }
-}
-//Edeman Nutrition ends here!!!!
-
-
-
-
-
-
 class MainActivity : ComponentActivity() {
     private val exercisesList = mutableStateListOf<WgerExercise>()
     private var showSplashScreen by mutableStateOf(true)
@@ -149,51 +66,7 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    //Wger exercises test call
-    private fun fetchExercises() {
-        val token = "Token e5ea4eb8a0915c6e762a157e3924271f05769ade"
-        val api = WgerApi.retrofitService
 
-        lifecycleScope.launch {
-            try {
-                val response = api.getExercises(token)
-                responseText = when {
-                    response.results.isEmpty() -> "No exercises available"
-                    else -> response.results.joinToString("\n") { it.video }
-                }
-            } catch (e: Exception) {
-                responseText = "Error: ${e.message}"
-            }
-        }
-    }
-
-
-
-    private fun fetchNutrition(title: String) {
-        val appId = "00415436"
-        val appKey = "3e190e4d02288d5613f049ae81bb4603"
-
-        val ingredients = listOf("50 sausage", "1 pepsi", "1/2 cup sugar")
-
-
-        val edamamBody = NutritionRequest(
-            title = title,
-            ingr = ingredients
-        )
-
-        val edamamApi = EdamamApi.retrofitService
-
-        lifecycleScope.launch {
-            try {
-                val response = edamamApi.getNutritionDetails(appId, appKey, edamamBody)
-
-                responseText = Gson().toJson(response)
-
-            } catch (e: Exception) {
-                responseText = "Error: ${e.message}"
-            }
-        }
-    }
 }
 
 
@@ -232,54 +105,6 @@ fun LightWeightApp() {
 }
 
 
-@Composable
-fun FetchExercisesScreen(responseText: String, onFetchExercisesClick: () -> Unit) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-
-        Button(onClick = onFetchExercisesClick) {
-            Text(text = "Fetch Exercises")
-        }
-
-        Spacer(modifier = Modifier.height(20.dp))
-
-        Text(
-            text = responseText,
-            fontSize = 18.sp,
-            modifier = Modifier.padding(top = 20.dp)
-        )
-    }
-}
-
-
-@Composable
-fun FetchNutritionScreen(responseText: String, onFetchExercisesClick: () -> Unit) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-
-        Button(onClick = onFetchExercisesClick) {
-            Text(text = "Fetch Nutrition")
-        }
-
-        Spacer(modifier = Modifier.height(20.dp))
-
-        Text(
-            text = responseText,
-            fontSize = 18.sp,
-            modifier = Modifier.padding(top = 20.dp)
-        )
-    }
-}
 
 
 @Composable
@@ -292,7 +117,6 @@ fun SplashScreen(onSplashScreenClick: () -> Unit) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        // Logo image
         Image(
             painter = painterResource(id = R.drawable.light_weight_logo),
             contentDescription = "LightWeight Logo",
@@ -302,7 +126,6 @@ fun SplashScreen(onSplashScreenClick: () -> Unit) {
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        // Text on Splash
         BasicText(
             text = "LightWeight",
             style = MaterialTheme.typography.headlineLarge.copy(
@@ -326,7 +149,6 @@ fun LoginRegisterScreen(navController: NavController) {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        // Title text "LIGHTWEIGHT"
         Text(
             text = "LIGHTWEIGHT",
             color = MaterialTheme.colorScheme.onSurface,
@@ -339,7 +161,7 @@ fun LoginRegisterScreen(navController: NavController) {
         // Login Button
         Button(
             onClick = { navController.navigate("login") },
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFFC0CB)), // Light pink color
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFFC0CB)),
             shape = RoundedCornerShape(50),
             modifier = Modifier
                 .width(250.dp)
