@@ -18,11 +18,14 @@ import com.example.lightweight.ui.theme.LightWeightTheme
 import kotlinx.coroutines.launch
 import com.example.lightweight.ui.theme.softGreen
 import androidx.compose.ui.draw.clip
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun UserScreen() {
+fun UserScreen(navController: NavHostController) {
+
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
 
@@ -33,7 +36,7 @@ fun UserScreen() {
                 modifier = Modifier
                     .fillMaxHeight()
                     .width(240.dp)
-                    .background(MaterialTheme.colorScheme.background)
+                    .background(softGreen)
             ) {
                 DrawerContent { scope.launch { drawerState.close() } }
             }
@@ -59,7 +62,7 @@ fun UserScreen() {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 8.dp)
+                        .padding(horizontal = 8.dp, vertical = 8.dp)
                         .clip(RoundedCornerShape(24.dp))
                         .background(
                             color = softGreen,
@@ -99,7 +102,7 @@ fun UserScreen() {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(0.dp),
+                        .padding(8.dp),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -109,12 +112,12 @@ fun UserScreen() {
                         contentDescription = "Profile Image",
                         modifier = Modifier
                             .size(80.dp)
-                            .padding(4.dp)
+                            .padding(0.dp)
                     )
 
                     Spacer(modifier = Modifier.width(16.dp))
 
-                    Column(modifier = Modifier.fillMaxWidth(0.7f)) {
+                    Column(modifier = Modifier.fillMaxWidth(0.8f)) {
                         Text(
                             text = "Welcome, Test Test!",
                             fontSize = 20.sp,
@@ -141,7 +144,7 @@ fun UserScreen() {
                     Spacer(modifier = Modifier.width(32.dp))
 
                     Text(
-                        text = "Progress will go here...",
+                        text = "Weight track graph goes here",
                         fontSize = 16.sp,
                         color = MaterialTheme.colorScheme.onSurface
                     )
@@ -162,11 +165,11 @@ fun UserScreen() {
                     Spacer(modifier = Modifier.width(32.dp))
 
                     IconButton(
-                        onClick = { /* Bring to exercise screen logic here */ },
+                        onClick = { navController.navigate("weight_screen") },
                         modifier = Modifier
                             .size(80.dp)
                             .background(
-                                color = softGreen,
+                                color = MaterialTheme.colorScheme.primaryContainer,
                                 shape = RoundedCornerShape(10.dp)
                             )
                             .padding(8.dp)
@@ -180,11 +183,11 @@ fun UserScreen() {
                     }
 
                     IconButton(
-                        onClick = { /* Bring to exercise screen logic here */ },
+                        onClick = { navController.navigate("exercise_screen") },
                         modifier = Modifier
                             .size(80.dp)
                             .background(
-                                color = softGreen,
+                                color = MaterialTheme.colorScheme.primaryContainer,
                                 shape = RoundedCornerShape(10.dp)
                             )
                             .padding(8.dp)
@@ -206,10 +209,3 @@ fun UserScreen() {
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun UserScreenPreview() {
-    LightWeightTheme {
-        UserScreen()
-    }
-}

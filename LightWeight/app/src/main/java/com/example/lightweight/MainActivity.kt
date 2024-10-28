@@ -216,10 +216,16 @@ fun LightWeightApp() {
             }
             composable("register") {
                 //RegisterScreen()
-                UserScreen()
+                UserScreen(navController = navController)
             }
             composable("user_screen") {
-                UserScreen()
+                UserScreen(navController = navController)
+            }
+            composable("weight_screen") {
+                WeightScreen(navController = navController)
+            }
+            composable("exercise_screen") {
+                ExerciseScreen(navController = navController)
             }
         }
     }
@@ -367,12 +373,5 @@ fun SplashScreenPreview() {
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun UserScreenScreenPreview() {
-    LightWeightTheme {
-        UserScreen()
-    }
-}
 
 

@@ -81,7 +81,7 @@ fun LoginScreen() {
 
                 Button(
                     onClick = {
-                        // Handle login logic here
+                        //Logic for login
                     },
                     modifier = Modifier.fillMaxWidth(),
                     colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)
