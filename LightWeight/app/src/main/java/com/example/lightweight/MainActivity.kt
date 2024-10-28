@@ -88,8 +88,9 @@ fun LightWeightApp() {
                 LoginScreen()
             }
             composable("register") {
-                //RegisterScreen()
-                UserScreen(navController = navController)
+                RegisterScreen(onRegistrationSuccess = {
+                    navController.navigate("user_screen") // Navigate to user screen on success
+                })
             }
             composable("user_screen") {
                 UserScreen(navController = navController)
