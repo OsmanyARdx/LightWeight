@@ -1,22 +1,28 @@
 package com.example.lightweight
 
-import android.content.ContentValues.TAG
+import LoginScreen
+import RegisterScreen
 import android.os.Bundle
-import android.util.Log
-import android.window.SplashScreen
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -28,36 +34,15 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.lightweight.ui.theme.LightWeightTheme
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.http.GET
-import retrofit2.http.Header
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.google.firebase.Firebase
-import com.google.firebase.firestore.firestore
-import com.google.gson.Gson
-import kotlinx.coroutines.launch
-import retrofit2.http.Body
-import retrofit2.http.Headers
-import retrofit2.http.POST
-import retrofit2.http.Query
-import retrofit2.http.Url
-
-
+import com.example.lightweight.ui.theme.LightWeightTheme
+import com.google.firebase.firestore.FirebaseFirestore
 
 class MainActivity : ComponentActivity() {
-    private val exercisesList = mutableStateListOf<WgerExercise>()
-    private var showSplashScreen by mutableStateOf(true)
-    private var showExercisesScreen by mutableStateOf(false)
-    private var responseText by mutableStateOf("No exercises fetched")
-
-
-    val db = Firebase.firestore
+    private val db = FirebaseFirestore.getInstance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -65,10 +50,7 @@ class MainActivity : ComponentActivity() {
             LightWeightApp()
         }
     }
-
-
 }
-
 
 @Composable
 fun LightWeightApp() {
@@ -85,12 +67,17 @@ fun LightWeightApp() {
                 LoginRegisterScreen(navController = navController)
             }
             composable("login") {
-                LoginScreen()
+                LoginScreen(navController = navController)
             }
             composable("register") {
-                RegisterScreen(onRegistrationSuccess = {
-                    navController.navigate("user_screen") // Navigate to user screen on success
-                })
+                RegisterScreen(
+                    onRegistrationSuccess = {
+                        navController.popBackStack("login_register", inclusive = false) // Main screen
+                    },
+                    onBack = {
+                        navController.popBackStack() //Go to previous screen
+                    }
+                )
             }
             composable("user_screen") {
                 UserScreen(navController = navController)
@@ -113,7 +100,7 @@ fun SplashScreen(onSplashScreenClick: () -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxSize().background(MaterialTheme.colorScheme.background)
-            .clickable { onSplashScreenClick() } // Splash screen on click
+            .clickable { onSplashScreenClick() } // Splash screen changes on click
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center

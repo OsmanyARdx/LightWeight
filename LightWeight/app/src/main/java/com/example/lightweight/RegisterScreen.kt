@@ -1,26 +1,32 @@
-package com.example.lightweight
-
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Visibility
-import androidx.compose.material.icons.filled.VisibilityOff
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
+import com.example.lightweight.R
 import com.example.lightweight.ui.theme.limeGreen
-
+import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
+import com.example.lightweight.hashPassword // Import Utils.kt to hash the password
 
 @Composable
-fun RegisterScreen(onRegistrationSuccess: () -> Unit) {
+fun RegisterScreen(onRegistrationSuccess: () -> Unit, onBack: () -> Unit) {
+    val db = FirebaseFirestore.getInstance()
+
     var email by remember { mutableStateOf("") }
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -31,7 +37,7 @@ fun RegisterScreen(onRegistrationSuccess: () -> Unit) {
     var passwordError by remember { mutableStateOf("") }
     var emailError by remember { mutableStateOf("") }
     var dobError by remember { mutableStateOf("") }
-    var registrationSuccess by remember { mutableStateOf(false) }
+    var registrationError by remember { mutableStateOf("") }
 
     fun validatePassword(password: String): Boolean {
         val hasUppercase = password.any { it.isUpperCase() }
@@ -43,12 +49,10 @@ fun RegisterScreen(onRegistrationSuccess: () -> Unit) {
             passwordError = "Password must contain at least one uppercase letter, one lowercase letter, one number, and be at least 5 characters long."
             return false
         }
-
         passwordError = ""
         return true
     }
 
-    // Email validation logic
     fun validateEmail(email: String): Boolean {
         if (!email.contains("@")) {
             emailError = "Email must contain an '@' sign."
@@ -58,7 +62,6 @@ fun RegisterScreen(onRegistrationSuccess: () -> Unit) {
         return true
     }
 
-    // Date of birth validation logic
     fun validateDateOfBirth(dob: String): Boolean {
         val regex = Regex("^(\\d{4}[-/]?\\d{1,2}[-/]?\\d{1,2})$")
         if (!regex.matches(dob)) {
@@ -69,11 +72,53 @@ fun RegisterScreen(onRegistrationSuccess: () -> Unit) {
         return true
     }
 
-    fun performRegistration() {
+    suspend fun performRegistration() {
         if (validateEmail(email) && validatePassword(password) && validateDateOfBirth(dateOfBirth)) {
+            try {
+                val emailQuery = db.collection("users")
+                    .whereEqualTo("email", email)
+                    .get()
+                    .await()
 
-            registrationSuccess = true
-            onRegistrationSuccess()
+                if (emailQuery.documents.isNotEmpty()) {
+                    emailError = "This email is already in use. Please use a different email."
+                    return
+                }
+
+                // Use hashPassword
+                val hashedPassword = hashPassword(password)
+
+                val passwordQuery = db.collection("users")
+                    .whereEqualTo("password", hashedPassword)
+                    .get()
+                    .await()
+
+                if (passwordQuery.documents.isNotEmpty()) {
+                    passwordError = "This password has been used. Please choose a different password."
+                    return
+                }
+
+                val user = hashMapOf(
+                    "email" to email,
+                    "username" to username,
+                    "firstName" to firstName,
+                    "lastName" to lastName,
+                    "dateOfBirth" to dateOfBirth,
+                    "password" to hashedPassword
+                )
+
+                db.collection("users")
+                    .add(user)
+                    .addOnSuccessListener {
+                        onRegistrationSuccess()
+                    }
+                    .addOnFailureListener { e ->
+                        registrationError = "Registration failed: ${e.message}"
+                    }
+
+            } catch (e: Exception) {
+                registrationError = "Registration failed: ${e.message}"
+            }
         }
     }
 
@@ -85,6 +130,22 @@ fun RegisterScreen(onRegistrationSuccess: () -> Unit) {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                IconButton(onClick = { onBack() }) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = "Back"
+                    )
+                }
+                Spacer(modifier = Modifier.width(8.dp))
+                Text("Register Your Account", fontSize = 24.sp)
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
             Image(
                 painter = painterResource(id = R.drawable.light_weight_logo),
                 contentDescription = "Profile Image",
@@ -92,9 +153,6 @@ fun RegisterScreen(onRegistrationSuccess: () -> Unit) {
                     .size(170.dp)
                     .padding(4.dp)
             )
-
-            Spacer(modifier = Modifier.width(16.dp))
-            Text("Register Your Account", fontSize = 30.sp, modifier = Modifier.padding(bottom = 16.dp))
 
             OutlinedTextField(
                 value = email,
@@ -183,7 +241,9 @@ fun RegisterScreen(onRegistrationSuccess: () -> Unit) {
             Spacer(modifier = Modifier.height(16.dp))
             Button(
                 onClick = {
-                    performRegistration()
+                    CoroutineScope(Dispatchers.IO).launch {
+                        performRegistration()
+                    }
                 },
                 modifier = Modifier.fillMaxWidth(),
                 colors = ButtonDefaults.buttonColors(containerColor = limeGreen)
@@ -191,12 +251,12 @@ fun RegisterScreen(onRegistrationSuccess: () -> Unit) {
                 Text("Register")
             }
 
-            if (registrationSuccess) {
+            if (registrationError.isNotEmpty()) {
                 Spacer(modifier = Modifier.height(16.dp))
                 Text(
-                    text = "Congratulations! Registration successful.",
-                    color = Color.Green,
-                    fontSize = 20.sp,
+                    text = registrationError,
+                    color = MaterialTheme.colorScheme.error,
+                    fontSize = 16.sp,
                     modifier = Modifier.padding(top = 16.dp)
                 )
             }
@@ -207,5 +267,8 @@ fun RegisterScreen(onRegistrationSuccess: () -> Unit) {
 @Preview(showBackground = true)
 @Composable
 fun PreviewRegisterScreen() {
-    RegisterScreen {}
+    RegisterScreen(
+        onRegistrationSuccess = {},
+        onBack = {}
+    )
 }
