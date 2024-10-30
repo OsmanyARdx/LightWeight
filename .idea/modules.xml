@@ -3,10 +3,10 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/LightWeight.iml" filepath="$PROJECT_DIR$/.idea/modules/LightWeight.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/LightWeight.app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/LightWeight.app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/LightWeight.app.androidTest.iml" filepath="$PROJECT_DIR$/.idea/modules/app/LightWeight.app.androidTest.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/LightWeight.app.main.iml" filepath="$PROJECT_DIR$/.idea/modules/app/LightWeight.app.main.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/LightWeight.app.unitTest.iml" filepath="$PROJECT_DIR$/.idea/modules/app/LightWeight.app.unitTest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/LightWeight.LightWeight.app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/LightWeight.LightWeight.app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/LightWeight.LightWeight.app.androidTest~1.iml" filepath="$PROJECT_DIR$/.idea/modules/app/LightWeight.LightWeight.app.androidTest~1.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/LightWeight.LightWeight.app.main~1.iml" filepath="$PROJECT_DIR$/.idea/modules/app/LightWeight.LightWeight.app.main~1.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/LightWeight.LightWeight.app.unitTest~1.iml" filepath="$PROJECT_DIR$/.idea/modules/app/LightWeight.LightWeight.app.unitTest~1.iml" />
     </modules>
   </component>
 </project>
