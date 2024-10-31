@@ -27,6 +27,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import coil.compose.rememberImagePainter
+import com.example.lightweight.ui.theme.LightWeightTheme
 import com.example.lightweight.ui.theme.softGreen
 import kotlinx.coroutines.launch
 
@@ -259,19 +260,6 @@ fun ExerciseScreen(navController: NavController) {
                     }
 
                     Spacer(modifier = Modifier.height(16.dp))
-
-                    Text(
-                        text = "Raw Response:",
-                        fontSize = 18.sp,
-                        color = MaterialTheme.colorScheme.onSurface,
-                        fontWeight = FontWeight.Bold
-                    )
-
-                    Text(
-                        text = rawResponse,
-                        modifier = Modifier.fillMaxWidth().heightIn(min = 100.dp),
-                        style = MaterialTheme.typography.bodyMedium,
-                    )
                 }
             }
         }
@@ -284,4 +272,15 @@ fun extractExerciseName(imageUrl: String): String {
         .replace("-", " ")
         .split(" ")
         .joinToString(" ") { it.capitalize() }
+}
+
+
+
+@Preview(showBackground = true)
+@Composable
+fun ExerciseScreenPreview() {
+    LightWeightTheme {
+        val navController = rememberNavController()
+        ExerciseScreen(navController)
+    }
 }
