@@ -7,7 +7,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -23,8 +23,10 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -39,6 +41,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.lightweight.ui.theme.LightWeightTheme
+import com.example.lightweight.ui.theme.cyanGreen
+import com.example.lightweight.ui.theme.limeGreen
+import kotlinx.coroutines.delay
 
 class MainActivity : ComponentActivity() {
 
@@ -57,7 +62,7 @@ fun LightWeightApp() {
     LightWeightTheme {
         NavHost(navController = navController, startDestination = "splash") {
             composable("splash") {
-                SplashScreen(onSplashScreenClick = {
+                SplashScreen(onSplashScreenTimeout = {
                     navController.navigate("login_register")
                 })
             }
@@ -90,15 +95,32 @@ fun LightWeightApp() {
     }
 }
 
-
-
-
 @Composable
-fun SplashScreen(onSplashScreenClick: () -> Unit) {
+fun SplashScreen(onSplashScreenTimeout: () -> Unit) {
+    LaunchedEffect(Unit) {
+        delay(3000) // 3 seconds
+        onSplashScreenTimeout()
+    }
+
     Column(
         modifier = Modifier
-            .fillMaxSize().background(MaterialTheme.colorScheme.background)
-            .clickable { onSplashScreenClick() } // Splash screen changes on click
+            .fillMaxSize()
+            .background(
+                brush = Brush.verticalGradient(
+                    colors = listOf(
+                        Color(0xFFFFFFFF),
+                        Color(0xFFFFFFFF),
+                        Color(0xFFE8F5E9),
+                        Color(0xFFC8E6C9),
+                        Color(0xFFC8E6C9),
+                        Color(0xFFC8E6C9),
+                        Color(0xFFC8E6C9),
+                        Color(0xFFE8F5E9),
+                        Color(0xFFFFFFFF),
+                        Color(0xFFFFFFFF)
+                    ),
+                )
+            )
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
@@ -125,13 +147,29 @@ fun SplashScreen(onSplashScreenClick: () -> Unit) {
 }
 
 
+
 @Composable
 fun LoginRegisterScreen(navController: NavController) {
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(0.dp)
-            .background(MaterialTheme.colorScheme.background),
+            .background(
+                    brush = Brush.verticalGradient(
+                    colors = listOf(
+                        Color(0xFFFFFFFF),
+                        Color(0xFFFFFFFF),
+                        Color(0xFFE8F5E9),
+                        Color(0xFFC8E6C9),
+                        Color(0xFFC8E6C9),
+                        Color(0xFFC8E6C9),
+                        Color(0xFFC8E6C9),
+                        Color(0xFFE8F5E9),
+                        Color(0xFFFFFFFF),
+                        Color(0xFFFFFFFF)
+                    )
+                    )
+            ),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
@@ -147,11 +185,12 @@ fun LoginRegisterScreen(navController: NavController) {
         // Login Button
         Button(
             onClick = { navController.navigate("login") },
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFFC0CB)),
+            colors = ButtonDefaults.buttonColors(cyanGreen),
             shape = RoundedCornerShape(50),
             modifier = Modifier
                 .width(250.dp)
                 .height(70.dp)
+                .border(2.dp, Color.Black, RoundedCornerShape(50))
         ) {
             Text(text = "Login", fontSize = 18.sp)
         }
@@ -161,18 +200,19 @@ fun LoginRegisterScreen(navController: NavController) {
         // Register Button
         Button(
             onClick = { navController.navigate("register") },
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFADD8E6)),
+            colors = ButtonDefaults.buttonColors(containerColor = limeGreen),
             shape = RoundedCornerShape(50),
             modifier = Modifier
                 .width(250.dp)
                 .height(70.dp)
+                .border(2.dp, Color.Black, RoundedCornerShape(50))
         ) {
             Text(text = "Register", fontSize = 18.sp)
         }
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        Button(
+        /*Button(
             onClick = { navController.navigate("user_screen") },
             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.onPrimaryContainer),
             shape = RoundedCornerShape(50),
@@ -181,7 +221,7 @@ fun LoginRegisterScreen(navController: NavController) {
                 .height(70.dp)
         ) {
             Text(text = "Test User", fontSize = 18.sp)
-        }
+        }*/
     }
 }
 
@@ -190,9 +230,10 @@ fun LoginRegisterScreen(navController: NavController) {
 @Composable
 fun SplashScreenPreview() {
     LightWeightTheme {
-        SplashScreen(onSplashScreenClick = {})
+        SplashScreen(onSplashScreenTimeout = {})
     }
 }
+
 
 
 
