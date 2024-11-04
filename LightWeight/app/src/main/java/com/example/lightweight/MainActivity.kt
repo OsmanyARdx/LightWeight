@@ -26,6 +26,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Color.Companion.Green
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
@@ -39,6 +40,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.lightweight.ui.theme.LightWeightTheme
+import com.example.lightweight.ui.theme.cyanGreen
+import com.example.lightweight.ui.theme.limeGreen
 
 class MainActivity : ComponentActivity() {
 
@@ -147,7 +150,7 @@ fun LoginRegisterScreen(navController: NavController) {
         // Login Button
         Button(
             onClick = { navController.navigate("login") },
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFFC0CB)),
+            colors = ButtonDefaults.buttonColors(containerColor = cyanGreen),
             shape = RoundedCornerShape(50),
             modifier = Modifier
                 .width(250.dp)
@@ -161,7 +164,7 @@ fun LoginRegisterScreen(navController: NavController) {
         // Register Button
         Button(
             onClick = { navController.navigate("register") },
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFADD8E6)),
+            colors = ButtonDefaults.buttonColors(containerColor = limeGreen),
             shape = RoundedCornerShape(50),
             modifier = Modifier
                 .width(250.dp)
@@ -172,7 +175,7 @@ fun LoginRegisterScreen(navController: NavController) {
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        Button(
+        /*Button(
             onClick = { navController.navigate("user_screen") },
             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.onPrimaryContainer),
             shape = RoundedCornerShape(50),
@@ -181,7 +184,7 @@ fun LoginRegisterScreen(navController: NavController) {
                 .height(70.dp)
         ) {
             Text(text = "Test User", fontSize = 18.sp)
-        }
+        }*/
     }
 }
 
