@@ -3,6 +3,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -129,190 +130,191 @@ fun RegisterScreen(onRegistrationSuccess: () -> Unit, onBack: () -> Unit) {
     }
 
     Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
-        Column(
+        LazyColumn(
             modifier = Modifier
                 .fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Top
         ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(limeGreen)
-                    .padding(vertical = 16.dp)
-                    .align(Alignment.Start)
-            ) {
-                Row(
+            item {
+                Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(start = 8.dp),
-                    verticalAlignment = Alignment.CenterVertically
+                        .background(limeGreen)
+                        .padding(vertical = 16.dp)
                 ) {
-                    IconButton(onClick = { onBack() }) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back",
-                            tint = White
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(start = 8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        IconButton(onClick = { onBack() }) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = "Back",
+                                tint = White
+                            )
+                        }
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            "Register Your Account",
+                            fontSize = 24.sp,
+                            color = White,
+                            modifier = Modifier.padding(start = 8.dp)
                         )
                     }
-                    Spacer(modifier = Modifier.width(8.dp))
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Image(
+                    painter = painterResource(id = R.drawable.light_weight_logo),
+                    contentDescription = "Profile Image",
+                    modifier = Modifier
+                        .size(170.dp)
+                        .padding(4.dp)
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+            }
+
+            item {
+                OutlinedTextField(
+                    value = email,
+                    onValueChange = {
+                        email = it
+                        validateEmail(it)
+                    },
+                    label = { Text("Email") },
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)
+                )
+
+                if (emailError.isNotEmpty()) {
                     Text(
-                        "Register Your Account",
-                        fontSize = 24.sp,
-                        color = White,
-                        modifier = Modifier.padding(start = 8.dp)
+                        text = emailError,
+                        color = MaterialTheme.colorScheme.error,
+                        modifier = Modifier.padding(top = 8.dp)
                     )
                 }
+
+                Spacer(modifier = Modifier.height(8.dp))
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Image(
-                painter = painterResource(id = R.drawable.light_weight_logo),
-                contentDescription = "Profile Image",
-                modifier = Modifier
-                    .size(170.dp)
-                    .padding(4.dp)
-            )
-
-            OutlinedTextField(
-                value = email,
-                onValueChange = {
-                    email = it
-                    validateEmail(it)
-                },
-                label = { Text("Email") },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp)
-            )
-
-            if (emailError.isNotEmpty()) {
-                Text(
-                    text = emailError,
-                    color = MaterialTheme.colorScheme.error,
-                    modifier = Modifier.padding(top = 8.dp)
+            item {
+                OutlinedTextField(
+                    value = username,
+                    onValueChange = { username = it },
+                    label = { Text("Username") },
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
                 )
+
+                Spacer(modifier = Modifier.height(8.dp))
             }
 
-            Spacer(modifier = Modifier.height(8.dp))
-
-            OutlinedTextField(
-                value = username,
-                onValueChange = { username = it },
-                label = { Text("Username") },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp)
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            OutlinedTextField(
-                value = firstName,
-                onValueChange = { firstName = it },
-                label = { Text("First Name") },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp)
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            OutlinedTextField(
-                value = lastName,
-                onValueChange = { lastName = it },
-                label = { Text("Last Name") },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp)
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            OutlinedTextField(
-                value = dateOfBirth,
-                onValueChange = {
-                    dateOfBirth = it
-                    validateDateOfBirth(it)
-                },
-                label = { Text("Date of Birth (YYYY-MM-DD)") },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp)
-            )
-
-            if (dobError.isNotEmpty()) {
-                Text(
-                    text = dobError,
-                    color = MaterialTheme.colorScheme.error,
-                    modifier = Modifier.padding(top = 8.dp)
+            item {
+                OutlinedTextField(
+                    value = firstName,
+                    onValueChange = { firstName = it },
+                    label = { Text("First Name") },
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
                 )
+
+                Spacer(modifier = Modifier.height(8.dp))
             }
 
-            Spacer(modifier = Modifier.height(8.dp))
-
-            OutlinedTextField(
-                value = password,
-                onValueChange = {
-                    password = it
-                    validatePassword(it)
-                },
-                label = { Text("Password") },
-                visualTransformation = if (isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-                trailingIcon = {
-                    IconButton(onClick = { isPasswordVisible = !isPasswordVisible }) {
-                        Icon(
-                            imageVector = if (isPasswordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff,
-                            contentDescription = if (isPasswordVisible) "Hide password" else "Show password"
-                        )
-                    }
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp)
-            )
-
-            if (passwordError.isNotEmpty()) {
-                Text(
-                    text = passwordError,
-                    color = MaterialTheme.colorScheme.error,
-                    modifier = Modifier.padding(top = 8.dp)
+            item {
+                OutlinedTextField(
+                    value = lastName,
+                    onValueChange = { lastName = it },
+                    label = { Text("Last Name") },
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
                 )
+
+                Spacer(modifier = Modifier.height(8.dp))
             }
-            Spacer(modifier = Modifier.height(12.dp))
 
+            item {
+                OutlinedTextField(
+                    value = dateOfBirth,
+                    onValueChange = {
+                        dateOfBirth = it
+                        validateDateOfBirth(it)
+                    },
+                    label = { Text("Date of Birth (YYYY-MM-DD)") },
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+                )
 
-
-            Button(
-                onClick = {
-                    CoroutineScope(Dispatchers.IO).launch {
-                        performRegistration()
-                    }
-                },
-                modifier = Modifier.fillMaxWidth()
-                    .padding(horizontal = 16.dp)
-                    .border(
-                        2.dp,
-                        Black,
-                        RoundedCornerShape(50)
+                if (dobError.isNotEmpty()) {
+                    Text(
+                        text = dobError,
+                        color = MaterialTheme.colorScheme.error,
+                        modifier = Modifier.padding(top = 8.dp)
                     )
-                    .height(50.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = limeGreen)
-            ) {
-                Text("Register")
+                }
+
+                Spacer(modifier = Modifier.height(8.dp))
             }
 
-
-
-            if (registrationError.isNotEmpty()) {
-                Spacer(modifier = Modifier.height(16.dp))
-                Text(
-                    text = registrationError,
-                    color = MaterialTheme.colorScheme.error,
-                    fontSize = 16.sp,
-                    modifier = Modifier.padding(top = 16.dp)
+            item {
+                OutlinedTextField(
+                    value = password,
+                    onValueChange = {
+                        password = it
+                        validatePassword(it)
+                    },
+                    label = { Text("Password") },
+                    visualTransformation = if (isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                    trailingIcon = {
+                        IconButton(onClick = { isPasswordVisible = !isPasswordVisible }) {
+                            Icon(
+                                imageVector = if (isPasswordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff,
+                                contentDescription = if (isPasswordVisible) "Hide password" else "Show password"
+                            )
+                        }
+                    },
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
                 )
+
+                if (passwordError.isNotEmpty()) {
+                    Text(
+                        text = passwordError,
+                        color = MaterialTheme.colorScheme.error,
+                        modifier = Modifier.padding(top = 8.dp)
+                    )
+                }
+                Spacer(modifier = Modifier.height(12.dp))
+            }
+
+            item {
+                Button(
+                    onClick = {
+                        CoroutineScope(Dispatchers.IO).launch {
+                            performRegistration()
+                        }
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .border(
+                            2.dp,
+                            Black,
+                            RoundedCornerShape(50)
+                        )
+                        .height(50.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = limeGreen)
+                ) {
+                    Text("Register")
+                }
+
+                if (registrationError.isNotEmpty()) {
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Text(
+                        text = registrationError,
+                        color = MaterialTheme.colorScheme.error,
+                        fontSize = 16.sp,
+                        modifier = Modifier.padding(top = 16.dp)
+                    )
+                }
             }
         }
     }
