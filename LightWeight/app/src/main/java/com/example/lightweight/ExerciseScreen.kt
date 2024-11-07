@@ -49,8 +49,8 @@ import kotlinx.coroutines.launch
  *      -H 'Authorization: Token e5ea4eb8a0915c6e762a157e3924271f05769ade'
  */
 
-// Wger API data classes - Osmany Image resonse
-data class WgerExerciseImage(
+// Wger API data classes
+data class WgerExercise(
     val id: Int,
     val uuid: String,
     val exercise_base: Int,
@@ -67,32 +67,18 @@ data class WgerExerciseImage(
     val author_history: List<String>
 )
 
+
+
 data class WgerResponse(
     val count: Int?,
     val next: String?,
     val previous: String?,
-    val results: List<WgerExerciseImage>
+    val results: List<WgerExercise>
 )
 
 // Wger API service interface
 interface WgerApiService {
     @GET("exerciseimage/")
-    suspend fun getExercises(
-        @Header("Authorization") token: String
-    ): WgerResponse
-}
-
-//Salar API Muscle groups
-interface WgerApiMuscleService {
-    @GET("muscle/")
-    suspend fun getExercises(
-        @Header("Authorization") token: String
-    ): WgerResponse
-}
-
-//Salar API Exercise list
-interface WgerApiExerciseService {
-    @GET("exercise/")
     suspend fun getExercises(
         @Header("Authorization") token: String
     ): WgerResponse
@@ -118,7 +104,7 @@ object WgerApi {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ExerciseScreen(navController: NavController) {
-    var exercises by remember { mutableStateOf<List<WgerExerciseImage>>(emptyList()) }
+    var exercises by remember { mutableStateOf<List<WgerExercise>>(emptyList()) }
     var loading by remember { mutableStateOf(true) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
     var rawResponse by remember { mutableStateOf("") }
