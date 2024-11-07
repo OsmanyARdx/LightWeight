@@ -85,7 +85,7 @@ fun WeightScreen(navController: NavHostController) {
                                 )
                             }
                         },
-                        colors = TopAppBarDefaults.smallTopAppBarColors(
+                        colors = TopAppBarDefaults.topAppBarColors(
                             containerColor = softGreen,
                             titleContentColor = Color.White
                         ),
