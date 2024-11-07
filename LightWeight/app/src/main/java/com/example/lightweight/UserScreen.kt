@@ -87,7 +87,7 @@ fun UserScreen(navController: NavHostController) {
                                 )
                             }
                         },
-                        colors = TopAppBarDefaults.smallTopAppBarColors(
+                        colors = TopAppBarDefaults.topAppBarColors(
                             containerColor = Color.Transparent,
                             titleContentColor = Color.White
                         ),

@@ -212,7 +212,7 @@ fun ExerciseScreen(navController: NavController) {
                                 )
                             }
                         },
-                        colors = TopAppBarDefaults.smallTopAppBarColors(
+                        colors = TopAppBarDefaults.topAppBarColors( //smallTopAppBarColors(
                             containerColor = Color.Transparent,
                             titleContentColor = Color.White
                         ),
