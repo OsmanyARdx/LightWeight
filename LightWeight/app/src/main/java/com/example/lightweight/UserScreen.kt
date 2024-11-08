@@ -1,7 +1,9 @@
 package com.example.lightweight
 
+import DrawerContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,6 +16,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -55,7 +58,10 @@ fun UserScreen(navController: NavHostController) {
                     .width(240.dp)
                     .background(softGreen)
             ) {
-                DrawerContent { scope.launch { drawerState.close() } }
+                DrawerContent(
+                    navController = navController,
+                    onClose = { scope.launch { drawerState.close() } }
+                )
             }
         }
     ) {
@@ -74,6 +80,7 @@ fun UserScreen(navController: NavHostController) {
                 horizontalAlignment = Alignment.Start,
                 verticalArrangement = Arrangement.Top
             ) {
+
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -111,116 +118,153 @@ fun UserScreen(navController: NavHostController) {
                         modifier = Modifier.fillMaxWidth()
                     )
                 }
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                Row(
+                LazyColumn(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(8.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
+                        .fillMaxSize()
+                        .background(MaterialTheme.colorScheme.surface),
+                    horizontalAlignment = Alignment.Start,
+                    verticalArrangement = Arrangement.Top
                 ) {
+                    item { Spacer(modifier = Modifier.height(16.dp)) }
 
-                    Image(
-                        painter = painterResource(id = R.drawable.light_weight_logo),
-                        contentDescription = "Profile Image",
-                        modifier = Modifier
-                            .size(80.dp)
-                            .padding(0.dp)
-                    )
-
-                    Spacer(modifier = Modifier.width(16.dp))
-
-                    Column(modifier = Modifier.fillMaxWidth(0.8f)) {
-                        Text(
-                            text = "Welcome, Test Test!",
-                            fontSize = 20.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
-                        Text(
-                            text = "Lower Text!",
-                            fontSize = 16.sp,
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(24.dp))
-
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(0.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Spacer(modifier = Modifier.width(32.dp))
-
-                    Text(
-                        text = "Weight track graph goes here",
-                        fontSize = 16.sp,
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
-
-                    Spacer(modifier = Modifier.width(32.dp))
-                }
-
-                Spacer(modifier = Modifier.weight(1f))
-
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(0.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-
-                    Spacer(modifier = Modifier.width(32.dp))
-
-                    IconButton(
-                        onClick = { navController.navigate("weight_screen") },
-                        modifier = Modifier
-                            .size(80.dp)
-                            .background(
-                                color = MaterialTheme.colorScheme.primaryContainer,
-                                shape = RoundedCornerShape(10.dp)
-                            )
-                            .padding(8.dp)
-                    ) {
-                        Image(
-                            painter = painterResource(id = R.drawable.scale),
-                            contentDescription = "Exercise Icon",
+                    item {
+                        Row(
                             modifier = Modifier
-                                .size(40.dp)
-                        )
-                    }
-
-                    IconButton(
-                        onClick = { navController.navigate("exercise_screen") },
-                        modifier = Modifier
-                            .size(80.dp)
-                            .background(
-                                color = MaterialTheme.colorScheme.primaryContainer,
-                                shape = RoundedCornerShape(10.dp)
+                                .fillMaxWidth()
+                                .padding(8.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Image(
+                                painter = painterResource(id = R.drawable.light_weight_logo),
+                                contentDescription = "Profile Image",
+                                modifier = Modifier
+                                    .size(80.dp)
+                                    .padding(0.dp)
                             )
-                            .padding(8.dp)
-                    ) {
-                        Image(
-                            painter = painterResource(id = R.drawable.exercise),
-                            contentDescription = "Exercise Icon",
-                            modifier = Modifier
-                                .size(40.dp)
-                        )
+
+                            Spacer(modifier = Modifier.width(16.dp))
+
+                            Column(modifier = Modifier.fillMaxWidth(0.8f)) {
+                                Text(
+                                    text = "Welcome, Test Test!",
+                                    fontSize = 20.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.onSurface
+                                )
+                                Text(
+                                    text = "Lower Text!",
+                                    fontSize = 16.sp,
+                                    color = MaterialTheme.colorScheme.onSurface
+                                )
+                            }
+                        }
                     }
 
-                    Spacer(modifier = Modifier.width(32.dp))
-                }
+                    item { Spacer(modifier = Modifier.height(24.dp)) }
 
-                Spacer(modifier = Modifier.weight(1f))
+                    item {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(0.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Spacer(modifier = Modifier.width(32.dp))
+                            Text(
+                                text = "Weight track graph goes here",
+                                fontSize = 16.sp,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                            Spacer(modifier = Modifier.width(32.dp))
+                        }
+                    }
+
+                    item { Spacer(modifier = Modifier.height(300.dp)) }
+
+                    item {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(0.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Spacer(modifier = Modifier.width(32.dp))
+
+                            Box(
+                                modifier = Modifier
+                                    .size(100.dp)
+                                    .background(
+                                        color = MaterialTheme.colorScheme.primaryContainer,
+                                        shape = RoundedCornerShape(10.dp)
+                                    )
+                                    .clickable { navController.navigate("weight_screen") },
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Image(
+                                    painter = painterResource(id = R.drawable.scale),
+                                    contentDescription = "Scale Icon",
+                                    modifier = Modifier.size(60.dp)
+                                )
+                            }
+
+                            Box(
+                                modifier = Modifier
+                                    .size(100.dp)
+                                    .background(
+                                        color = MaterialTheme.colorScheme.primaryContainer,
+                                        shape = RoundedCornerShape(10.dp)
+                                    )
+                                    .clickable { navController.navigate("exercise_screen") },
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Image(
+                                    painter = painterResource(id = R.drawable.exercise),
+                                    contentDescription = "Exercise Icon",
+                                    modifier = Modifier.size(60.dp)
+                                )
+                            }
+
+                            Spacer(modifier = Modifier.width(32.dp))
+                        }
+                    }
+
+                    item { Spacer(modifier = Modifier.height(24.dp)) }
+
+                    item {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(0.dp),
+                            horizontalArrangement = Arrangement.Center,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth(0.6f)
+                                    .height(100.dp)
+                                    .background(
+                                        color = MaterialTheme.colorScheme.primaryContainer,
+                                        shape = RoundedCornerShape(10.dp)
+                                    ),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Image(
+                                    painter = painterResource(id = R.drawable.nutritionicon),
+                                    contentDescription = "Nutrition Icon",
+                                    modifier = Modifier.size(60.dp)
+                                )
+                            }
+                        }
+                    }
+
+                    item { Spacer(modifier = Modifier.height(24.dp)) }
+                }
             }
         }
     }
 }
+
 

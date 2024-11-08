@@ -1,5 +1,6 @@
 package com.example.lightweight
 
+import DrawerContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -163,7 +164,10 @@ fun ExerciseScreen(navController: NavController) {
                     .width(240.dp)
                     .background(softGreen)
             ) {
-                DrawerContent { scope.launch { drawerState.close() } }
+                DrawerContent(
+                    navController = navController,
+                    onClose = { scope.launch { drawerState.close() } }
+                )
             }
         }
     ) {

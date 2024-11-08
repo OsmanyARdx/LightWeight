@@ -1,26 +1,73 @@
-package com.example.lightweight
-
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Text
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 
 @Composable
-fun DrawerContent(onClose: () -> Unit) {
-    // Add your drawer content here
+fun DrawerContent(navController: NavController, onClose: () -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp)
+            .padding(16.dp),
+        verticalArrangement = Arrangement.Top
     ) {
-        Text(text = "Drawer Item 1", modifier = Modifier.clickable { onClose() })
-        Spacer(modifier = Modifier.height(8.dp))
-        Text(text = "Drawer Item 2", modifier = Modifier.clickable { onClose() })
+
+        Text(
+            text = "Home",
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable {
+                    navController.navigate("user_screen") {
+                        popUpTo("user_screen") { inclusive = true }
+                    }
+                    onClose()
+                }
+                .padding(vertical = 12.dp)
+        )
+
+        Text(
+            text = "Weight",
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable {
+                    navController.navigate("weight_screen") {
+                        popUpTo("weight_screen") { inclusive = true }
+                    }
+                    onClose()
+                }
+                .padding(vertical = 12.dp)
+        )
+
+        Text(
+            text = "Exercise",
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable {
+                    navController.navigate("exercise_screen") {
+                        popUpTo("exercise_screen") { inclusive = true }
+                    }
+                    onClose()
+                }
+                .padding(vertical = 12.dp)
+        )
+
+        /* FOR LATER USE
+        Text(
+            text = "Nutrition",
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable {
+                    navController.navigate("exercise_screen") {
+                        popUpTo("exercise_screen") { inclusive = true }
+                    }
+                    onClose()
+                }
+                .padding(vertical = 12.dp)
+        )
+         */
     }
 }

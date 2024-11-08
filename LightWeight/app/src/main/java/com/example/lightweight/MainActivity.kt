@@ -1,5 +1,6 @@
 package com.example.lightweight
 
+import DrawerContent
 import LoginScreen
 import RegisterScreen
 import android.os.Bundle
@@ -20,10 +21,15 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.DrawerState
+import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -37,6 +43,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -44,21 +51,24 @@ import com.example.lightweight.ui.theme.LightWeightTheme
 import com.example.lightweight.ui.theme.cyanGreen
 import com.example.lightweight.ui.theme.limeGreen
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            LightWeightApp()
+            val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+            val navController = rememberNavController()
+            val scope = rememberCoroutineScope()
+
+                LightWeightApp(navController, drawerState)
         }
     }
 }
 
 @Composable
-fun LightWeightApp() {
-    val navController = rememberNavController()
-
+fun LightWeightApp(navController: NavHostController, drawerState: DrawerState) {
     LightWeightTheme {
         NavHost(navController = navController, startDestination = "splash") {
             composable("splash") {
@@ -75,10 +85,10 @@ fun LightWeightApp() {
             composable("register") {
                 RegisterScreen(
                     onRegistrationSuccess = {
-                        navController.popBackStack("login_register", inclusive = false) // Main screen
+                        navController.popBackStack("login_register", inclusive = false)
                     },
                     onBack = {
-                        navController.popBackStack() //Go to previous screen
+                        navController.popBackStack()
                     }
                 )
             }
@@ -98,7 +108,7 @@ fun LightWeightApp() {
 @Composable
 fun SplashScreen(onSplashScreenTimeout: () -> Unit) {
     LaunchedEffect(Unit) {
-        delay(3000) // 3 seconds
+        delay(3000)
         onSplashScreenTimeout()
     }
 
@@ -182,7 +192,6 @@ fun LoginRegisterScreen(navController: NavController) {
             modifier = Modifier.padding(bottom = 40.dp)
         )
 
-        // Login Button
         Button(
             onClick = { navController.navigate("login") },
             colors = ButtonDefaults.buttonColors(cyanGreen),
@@ -197,7 +206,6 @@ fun LoginRegisterScreen(navController: NavController) {
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        // Register Button
         Button(
             onClick = { navController.navigate("register") },
             colors = ButtonDefaults.buttonColors(containerColor = limeGreen),
