@@ -17,20 +17,6 @@
       </configuration>
     </facet>
   </component>
-  <component name="ModuleClassLoaderOverlays">
-    <paths>
-      <option value="/var/folders/30/lm055dc91b7cvtk4gm66zb740000gn/T/overlay11175060418986698316" />
-      <option value="/var/folders/30/lm055dc91b7cvtk4gm66zb740000gn/T/overlay13423684791891966393" />
-      <option value="/var/folders/30/lm055dc91b7cvtk4gm66zb740000gn/T/overlay8747978544923390648" />
-      <option value="/var/folders/30/lm055dc91b7cvtk4gm66zb740000gn/T/overlay18146901243472104464" />
-      <option value="/var/folders/30/lm055dc91b7cvtk4gm66zb740000gn/T/overlay14131345361341215543" />
-      <option value="/var/folders/30/lm055dc91b7cvtk4gm66zb740000gn/T/overlay9579185837534605820" />
-      <option value="/var/folders/30/lm055dc91b7cvtk4gm66zb740000gn/T/overlay6013226882665766496" />
-      <option value="/var/folders/30/lm055dc91b7cvtk4gm66zb740000gn/T/overlay1849449967586791788" />
-      <option value="/var/folders/30/lm055dc91b7cvtk4gm66zb740000gn/T/overlay2397698509161158613" />
-      <option value="/var/folders/30/lm055dc91b7cvtk4gm66zb740000gn/T/overlay16464416572666135459" />
-    </paths>
-  </component>
   <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_8">
     <exclude-output />
     <content url="file://$MODULE_DIR$/../../../LightWeight/app">
