@@ -245,6 +245,7 @@ fun UserScreen(navController: NavHostController) {
                                 modifier = Modifier
                                     .fillMaxWidth(0.6f)
                                     .height(100.dp)
+                                    .clickable { navController.navigate("nutrition_screen") }
                                     .background(
                                         color = MaterialTheme.colorScheme.primaryContainer,
                                         shape = RoundedCornerShape(10.dp)
