@@ -55,19 +55,17 @@ fun DrawerContent(navController: NavController, onClose: () -> Unit) {
                 .padding(vertical = 12.dp)
         )
 
-        /* FOR LATER USE
         Text(
             text = "Nutrition",
             modifier = Modifier
                 .fillMaxWidth()
                 .clickable {
-                    navController.navigate("exercise_screen") {
-                        popUpTo("exercise_screen") { inclusive = true }
+                    navController.navigate("nutrition_screen") {
+                        popUpTo("nutrition_screen") { inclusive = true }
                     }
                     onClose()
                 }
                 .padding(vertical = 12.dp)
         )
-         */
     }
 }
