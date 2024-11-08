@@ -5,4 +5,8 @@
       <option value="C:\Users\frank\AppData\Local\Temp\overlay17517876604008336973" />
     </paths>
   </component>
+  <component name="NewModuleRootManager" inherit-compiler-output="true">
+    <exclude-output />
+    <orderEntry type="sourceFolder" forTests="false" />
+  </component>
 </module>

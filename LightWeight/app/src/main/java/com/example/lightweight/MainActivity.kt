@@ -2,6 +2,7 @@ package com.example.lightweight
 
 import DrawerContent
 import LoginScreen
+import NutritionScreen
 import RegisterScreen
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -100,6 +101,9 @@ fun LightWeightApp(navController: NavHostController, drawerState: DrawerState) {
             }
             composable("exercise_screen") {
                 ExerciseScreen(navController = navController)
+            }
+            composable("nutrition_screen"){
+                NutritionScreen(navController = navController)
             }
         }
     }
