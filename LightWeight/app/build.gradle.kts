@@ -86,6 +86,7 @@ dependencies {
     implementation (libs.ui.tooling.preview)
     implementation (libs.androidx.activity.compose.v170)
     implementation (libs.coil.compose)
+    implementation(libs.coil.svg)
 
     implementation (libs.androidx.foundation)
 

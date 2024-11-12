@@ -1,7 +1,8 @@
 [versions]
 activityComposeVersion = "1.7.0"
-agp = "8.6.1"
+agp = "8.5.2"
 coilCompose = "2.4.0"
+coilSvg = "2.1.0"
 constraintlayoutComposeAndroid = "1.1.0"
 converterGson = "2.9.0"
 firebaseFirestoreKtx = "25.1.1"
@@ -32,6 +33,7 @@ androidx-lifecycle-runtime-ktx-v261 = { module = "androidx.lifecycle:lifecycle-r
 androidx-material = { module = "androidx.compose.material:material", version.ref = "materialIconsExtended" }
 androidx-material-icons-extended = { module = "androidx.compose.material:material-icons-extended", version.ref = "materialIconsExtended" }
 coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coilCompose" }
+coil-svg = { module = "io.coil-kt:coil-svg", version.ref = "coilSvg" }
 converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "converterGson" }
 firebase-firestore-ktx = { module = "com.google.firebase:firebase-firestore-ktx", version.ref = "firebaseFirestoreKtx" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }

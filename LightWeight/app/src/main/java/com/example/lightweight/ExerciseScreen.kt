@@ -39,6 +39,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -58,6 +59,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
 import retrofit2.http.Header
 import java.util.Locale
+import coil.decode.SvgDecoder
 
 data class WgerExercise(
     val id: Int,
@@ -224,7 +226,9 @@ fun ExerciseScreen(navController: NavController) {
                     )
                 }
 
-                Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+                Column(modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp)) {
                     when {
                         loading -> {
                             CircularProgressIndicator()
@@ -259,27 +263,20 @@ fun ExerciseScreen(navController: NavController) {
                             } else {
                                 LazyColumn {
                                     items(muscleGroups) { muscleGroup ->
-                                        Column(modifier = Modifier.padding(vertical = 8.dp).background(MaterialTheme.colorScheme.primaryContainer).clickable {
-                                            selectedMuscleGroupId = muscleGroup.id
-                                            loading = true
-                                        }) {
+                                        Column(modifier = Modifier
+                                            .padding(vertical = 8.dp)
+                                            .background(MaterialTheme.colorScheme.primaryContainer)
+                                            .clickable {
+                                                selectedMuscleGroupId = muscleGroup.id
+                                                loading = true
+                                            }) {
                                             Text(
                                                 text = muscleGroup.name,
                                                 fontSize = 16.sp,
                                                 color = MaterialTheme.colorScheme.onSurface,
                                                 fontWeight = FontWeight.Bold
                                             )
-                                            Image(
-                                                painter = rememberAsyncImagePainter(
-                                                    ImageRequest.Builder(
-                                                        LocalContext.current
-                                                    ).data(data = "https://wger.de${muscleGroup.image_url_main}").apply(block = fun ImageRequest.Builder.() {
-                                                        placeholder(R.drawable.user)
-                                                    }).build()
-                                                ),
-                                                contentDescription = null,
-                                                modifier = Modifier.fillMaxWidth().height(200.dp)
-                                            )
+                                            SvgImage(url = "https://wger.de${muscleGroup.image_url_main}")
                                         }
                                     }
                                 }
@@ -302,7 +299,9 @@ fun ExerciseScreen(navController: NavController) {
                             } else {
                                 LazyColumn {
                                     items(exercises) { exercise ->
-                                        Column(modifier = Modifier.padding(vertical = 8.dp).background(MaterialTheme.colorScheme.primaryContainer)) {
+                                        Column(modifier = Modifier
+                                            .padding(vertical = 8.dp)
+                                            .background(MaterialTheme.colorScheme.primaryContainer)) {
                                             Text(
                                                 text = extractExerciseName(exercise.image.toString()),
                                                 fontSize = 16.sp,
@@ -318,7 +317,9 @@ fun ExerciseScreen(navController: NavController) {
                                                     }).build()
                                                 ),
                                                 contentDescription = null,
-                                                modifier = Modifier.fillMaxWidth().height(200.dp)
+                                                modifier = Modifier
+                                                    .fillMaxWidth()
+                                                    .height(200.dp)
                                             )
                                         }
                                     }
@@ -332,6 +333,25 @@ fun ExerciseScreen(navController: NavController) {
             }
         }
     }
+}
+
+@Composable
+fun SvgImage(url: String, modifier: Modifier = Modifier) {
+    val painter = rememberAsyncImagePainter(
+        ImageRequest.Builder(LocalContext.current)
+            .data(url)
+            .decoderFactory(SvgDecoder.Factory())
+            .placeholder(R.drawable.user)
+            .error(R.drawable.light_weight_logo)
+            .build()
+    )
+
+    Image(
+        painter = painter,
+        contentDescription = null,
+        contentScale = ContentScale.Fit,
+        modifier = modifier
+    )
 }
 
 fun extractExerciseName(imageUrl: String): String {
