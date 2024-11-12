@@ -57,7 +57,7 @@
     <content url="file://$MODULE_DIR$/../../../LightWeight/app/src/testDebug" />
     <orderEntry type="jdk" jdkName="Android API 35, extension level 13 Platform" jdkType="Android SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="module" module-name="LightWeight.LightWeight.app.main~1" scope="TEST" />
+    <orderEntry type="module" module-name="AndroidStudioProjects.LightWeight.LightWeight.app.main" scope="TEST" />
     <orderEntry type="library" scope="TEST" name="Gradle: androidx.compose.ui:ui-tooling-android:1.7.5@aar" level="project" />
     <orderEntry type="library" scope="TEST" name="Gradle: androidx.compose.runtime:runtime-android:1.7.5@aar" level="project" />
     <orderEntry type="library" scope="TEST" name="Gradle: androidx.annotation:annotation-experimental:1.4.1@aar" level="project" />
