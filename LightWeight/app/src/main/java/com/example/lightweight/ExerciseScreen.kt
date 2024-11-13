@@ -78,7 +78,8 @@ data class WgerExercise(
     val license: Int,
     val license_author: String,
     val variations: List<Int>,
-    val author_history: List<String>
+    val author_history: List<String>,
+    val image: ExerciseImage?,
 )
 
 data class MuscleGroup(
@@ -120,6 +121,13 @@ data class WgerMuscleGroupResponse(
     val results: List<MuscleGroup>
 )
 
+data class WgerImageResponse(
+    val count: Int?,
+    val next: String?,
+    val previous: String?,
+    val results: List<ExerciseImage>
+)
+
 interface WgerApiService {
     @GET("muscle/")
     suspend fun getMuscleGroups(
@@ -134,7 +142,7 @@ interface WgerApiService {
     @GET("exerciseimage/?limit=500&offset=0")
     suspend fun getImages(
         @Header("Authorization") token: String
-    ): ExerciseImage
+    ): WgerImageResponse
 }
 
 object WgerApi {
@@ -172,12 +180,17 @@ fun ExerciseScreen(navController: NavController) {
             } else {
                 val response = api.getExercises(token)
                 Log.d("ExerciseScreen", "Full exercise response: ${response}")
-
+                val imageResponse = api.getImages(token)
 
 
                 exercises = response.results.filter { exercise ->
                     val musclesList = exercise.muscles ?: emptyList()
                     selectedMuscleGroupId in musclesList
+                }
+
+                val exercisesWithImages = exercises.map { exercise ->
+                    val exerciseImages = imageResponse.results.filter { it.exercise_base == exercise.exercise_base }
+                    exercise.copy(image = exerciseImages.firstOrNull())
                 }
 
 
@@ -354,7 +367,7 @@ fun ExerciseScreen(navController: NavController) {
                                                 painter = rememberAsyncImagePainter(
                                                     ImageRequest.Builder(
                                                         LocalContext.current
-                                                    ).data(data = exercise).apply(block = fun ImageRequest.Builder.() {
+                                                    ).data(data = exercise.image?.image).apply(block = fun ImageRequest.Builder.() {
                                                         placeholder(R.drawable.user)
                                                     }).build()
                                                 ),
