@@ -1,6 +1,7 @@
 package com.example.lightweight
 
 import DrawerContent
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -60,13 +61,39 @@ import retrofit2.http.GET
 import retrofit2.http.Header
 import java.util.Locale
 import coil.decode.SvgDecoder
+import java.util.logging.Logger
 
 data class WgerExercise(
     val id: Int,
     val uuid: String,
+    val name: String,
+    val exercise_base: Int,
+    val description: String,
+    val created: String,
+    val category: Int,
+    val muscles: List<Int>,
+    val muscles_secondary: List<Int>,
+    val equipment: List<Int>,
+    val language: Int,
+    val license: Int,
+    val license_author: String,
+    val variations: List<Int>,
+    val author_history: List<String>
+)
+
+data class MuscleGroup(
+    val id: Int,
+    val name: String,
+    val image_url_main: String?,
+    val image_url_secondary: String?
+)
+
+data class ExerciseImage(
+    val id: Int,
+    val uuid: String,
     val exercise_base: Int,
     val exercise_base_uuid: String,
-    val image: String?,
+    val image: String,
     val is_main: Boolean,
     val style: String,
     val license: Int,
@@ -76,13 +103,6 @@ data class WgerExercise(
     val license_author_url: String,
     val license_derivative_source_url: String,
     val author_history: List<String>
-)
-
-data class MuscleGroup(
-    val id: Int,
-    val name: String,
-    val image_url_main: String?,
-    val image_url_secondary: String?
 )
 
 
@@ -106,10 +126,15 @@ interface WgerApiService {
         @Header("Authorization") token: String
     ): WgerMuscleGroupResponse
 
-    @GET("exerciseimage/")
+    @GET("exercise/?limit=500&offset=0")
     suspend fun getExercises(
         @Header("Authorization") token: String
     ): WgerResponse
+
+    @GET("exerciseimage/?limit=500&offset=0")
+    suspend fun getImages(
+        @Header("Authorization") token: String
+    ): ExerciseImage
 }
 
 object WgerApi {
@@ -132,6 +157,7 @@ fun ExerciseScreen(navController: NavController) {
     var loading by remember { mutableStateOf(true) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
     var selectedMuscleGroupId by remember { mutableStateOf<Int?>(null) }
+    var images by remember { mutableStateOf<List<ExerciseImage>>(emptyList()) }
 
     LaunchedEffect(selectedMuscleGroupId) {
         loading = true
@@ -142,16 +168,31 @@ fun ExerciseScreen(navController: NavController) {
             if (selectedMuscleGroupId == null) {
                 val response = api.getMuscleGroups(token)
                 muscleGroups = response.results
+                Log.d("ExerciseScreen", "Muscle groups fetched: $selectedMuscleGroupId")
             } else {
                 val response = api.getExercises(token)
-                // Fetch exercises that belong to the selected muscle group
-                exercises = response.results.filter { it.exercise_base == selectedMuscleGroupId }
+                Log.d("ExerciseScreen", "Full exercise response: ${response}")
+
+
+
+                exercises = response.results.filter { exercise ->
+                    val musclesList = exercise.muscles ?: emptyList()
+                    selectedMuscleGroupId in musclesList
+                }
+
+
+
+
+                Log.d("ExerciseScreen", "Filtered exercises: ${exercises.size}")
             }
         } catch (e: Exception) {
-            errorMessage = "An error occurred: ${e.localizedMessage}"
+            errorMessage = "An error occurred: ${e.localizedMessage} ${selectedMuscleGroupId}"
+            Log.e("ExerciseScreen", "Error: ${e.localizedMessage}", e)
         } finally {
             loading = false
         }
+
+      
     }
 
     val drawerState = rememberDrawerState(DrawerValue.Closed)
@@ -283,8 +324,9 @@ fun ExerciseScreen(navController: NavController) {
                             }
                         }
                         else -> {
+
                             Text(
-                                text = "Exercises for ${muscleGroups.find { it.id == selectedMuscleGroupId }?.name}:",
+                                text = "Exercises for ${selectedMuscleGroupId} ${muscleGroups.find { it.id == selectedMuscleGroupId }?.name}:",
                                 fontSize = 18.sp,
                                 color = MaterialTheme.colorScheme.onSurface,
                                 fontWeight = FontWeight.Bold
@@ -303,7 +345,7 @@ fun ExerciseScreen(navController: NavController) {
                                             .padding(vertical = 8.dp)
                                             .background(MaterialTheme.colorScheme.primaryContainer)) {
                                             Text(
-                                                text = extractExerciseName(exercise.image.toString()),
+                                                text = extractExerciseName(exercise.name),
                                                 fontSize = 16.sp,
                                                 color = MaterialTheme.colorScheme.onSurface,
                                                 fontWeight = FontWeight.Bold
@@ -312,7 +354,7 @@ fun ExerciseScreen(navController: NavController) {
                                                 painter = rememberAsyncImagePainter(
                                                     ImageRequest.Builder(
                                                         LocalContext.current
-                                                    ).data(data = exercise.image).apply(block = fun ImageRequest.Builder.() {
+                                                    ).data(data = exercise).apply(block = fun ImageRequest.Builder.() {
                                                         placeholder(R.drawable.user)
                                                     }).build()
                                                 ),
