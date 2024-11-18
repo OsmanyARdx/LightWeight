@@ -138,6 +138,7 @@
     <orderEntry type="library" name="Gradle: io.coil-kt:coil-compose-base:2.4.0@aar" level="project" />
     <orderEntry type="library" name="Gradle: io.coil-kt:coil-base:2.4.0@aar" level="project" />
     <orderEntry type="library" name="Gradle: io.coil-kt:coil:2.4.0@aar" level="project" />
+    <orderEntry type="library" name="Gradle: io.coil-kt:coil-svg:2.1.0@aar" level="project" />
     <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib:2.0.0" level="project" />
     <orderEntry type="library" name="Gradle: org.jetbrains:annotations:23.0.0" level="project" />
     <orderEntry type="library" name="Gradle: androidx.annotation:annotation-jvm:1.8.1" level="project" />

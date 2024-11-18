@@ -1,8 +1,10 @@
 package com.example.lightweight
 
 import DrawerContent
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -38,6 +40,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -57,43 +60,52 @@ import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
 import retrofit2.http.Header
 import java.util.Locale
+import coil.decode.SvgDecoder
+import retrofit2.http.Query
+import java.util.logging.Logger
 
-
-/**
- * Wger API Documentation
- *
- * To interact with the Wger API, you need an API key.
- * For public resources such as exercises or ingredients, you don't need to provide anything.
- * You must pass the API key in the header as shown below.
- *
- * API key: e5ea4eb8a0915c6e762a157e3924271f05769ade
- *
- * In the request header:
- * Authorization: Token e5ea4eb8a0915c6e762a157e3924271f05769ade
- *
- * Example with curl:
- * curl -X GET https://wger.de/api/v2/workout/ \
- *      -H 'Authorization: Token e5ea4eb8a0915c6e762a157e3924271f05769ade'
- */
-
-// Wger API data classes
 data class WgerExercise(
+    val id: Int,
+    val uuid: String,
+    val name: String,
+    val exercise_base: Int,
+    val description: String,
+    val created: String,
+    val category: Int,
+    val muscles: List<Int>,
+    val muscles_secondary: List<Int>,
+    val equipment: List<Int>,
+    val language: Int,
+    val license: Int,
+    val license_author: String?,
+    val variations: List<Int>,
+    val author_history: List<String>,
+    val image: ExerciseImage?,
+)
+
+data class MuscleGroup(
+    val id: Int,
+    val name: String,
+    val image_url_main: String?,
+    val image_url_secondary: String?
+)
+
+data class ExerciseImage(
     val id: Int,
     val uuid: String,
     val exercise_base: Int,
     val exercise_base_uuid: String,
-    val image: String?,
+    val image: String,
     val is_main: Boolean,
     val style: String,
     val license: Int,
     val license_title: String,
     val license_object_url: String,
-    val license_author: String,
+    val license_author: String?,
     val license_author_url: String,
     val license_derivative_source_url: String,
     val author_history: List<String>
 )
-
 
 
 data class WgerResponse(
@@ -103,15 +115,39 @@ data class WgerResponse(
     val results: List<WgerExercise>
 )
 
-// Wger API service interface
+data class WgerMuscleGroupResponse(
+    val count: Int?,
+    val next: String?,
+    val previous: String?,
+    val results: List<MuscleGroup>
+)
+
+data class WgerImageResponse(
+    val count: Int?,
+    val next: String?,
+    val previous: String?,
+    val results: List<ExerciseImage>
+)
+
 interface WgerApiService {
-    @GET("exerciseimage/")
-    suspend fun getExercises(
+    @GET("muscle/?limit=500&offset=0")
+    suspend fun getMuscleGroups(
         @Header("Authorization") token: String
+    ): WgerMuscleGroupResponse
+
+    @GET("exercise/")
+    suspend fun getExercisesWithOffset(
+        @Header("Authorization") token: String,
+        @Query("limit") limit: Int = 500,
+        @Query("offset") offset: Int
     ): WgerResponse
+
+    @GET("exerciseimage/?limit=500&offset=0")
+    suspend fun getImages(
+        @Header("Authorization") token: String
+    ): WgerImageResponse
 }
 
-// Wger API object
 object WgerApi {
     private const val BASE_URL = "https://wger.de/api/v2/"
 
@@ -125,16 +161,40 @@ object WgerApi {
 }
 
 
+suspend fun getAllExercises(token: String, api: WgerApiService): List<WgerExercise> {
+    val exercises = mutableListOf<WgerExercise>()
+    var offset = 0
+    val limit = 500
+    var hasMoreData = true
+
+    try {
+        while (hasMoreData) {
+            val response = api.getExercisesWithOffset(token, limit, offset)
+            exercises.addAll(response.results)
+            offset += limit
+            hasMoreData = response.next != null
+        }
+    } catch (e: Exception) {
+        Log.e("getAllExercises", "Error fetching exercises: ${e.localizedMessage}", e)
+    }
+
+    return exercises
+}
+
 
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ExerciseScreen(navController: NavController) {
+    var muscleGroups by remember { mutableStateOf<List<MuscleGroup>>(emptyList()) }
+    var allExercises by remember { mutableStateOf<List<WgerExercise>>(emptyList()) }
+    var allImages by remember { mutableStateOf<List<ExerciseImage>>(emptyList()) }
     var exercises by remember { mutableStateOf<List<WgerExercise>>(emptyList()) }
     var loading by remember { mutableStateOf(true) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
-    var rawResponse by remember { mutableStateOf("") }
+    var selectedMuscleGroupId by remember { mutableStateOf<Int?>(null) }
+
 
     LaunchedEffect(Unit) {
         loading = true
@@ -142,11 +202,43 @@ fun ExerciseScreen(navController: NavController) {
         val api = WgerApi.retrofitService
 
         try {
-            val response = api.getExercises(token)
-            exercises = response.results
-            rawResponse = Gson().toJson(response)
+            val muscleResponse = api.getMuscleGroups(token)
+            muscleGroups = muscleResponse.results
+
+            allExercises = getAllExercises(token, api)
+            val imageResponse = api.getImages(token)
+            allImages = imageResponse.results
+
         } catch (e: Exception) {
             errorMessage = "An error occurred: ${e.localizedMessage}"
+            Log.e("ExerciseScreen", "Error: ${e.localizedMessage}", e)
+        } finally {
+            loading = false
+        }
+    }
+
+    LaunchedEffect(selectedMuscleGroupId) {
+        loading = true
+        try {
+            exercises = if (selectedMuscleGroupId == null) {
+                emptyList()
+            } else {
+                allExercises.filter { exercise ->
+                    selectedMuscleGroupId in (exercise.muscles ?: emptyList())
+                }.mapNotNull { exercise ->
+
+                    val matchingImage = allImages.find { it.exercise_base == exercise.exercise_base }
+
+                    if (matchingImage != null) {
+                        exercise.copy(image = matchingImage)
+                    } else {
+                        null
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            errorMessage = "An error occurred: ${e.localizedMessage}"
+            Log.e("Filtered", "Error: ${e.localizedMessage}", e)
         } finally {
             loading = false
         }
@@ -199,7 +291,7 @@ fun ExerciseScreen(navController: NavController) {
                     TopAppBar(
                         title = {
                             Text(
-                                text = "Exercise Time",
+                                text = "Muscle Groups",
                                 fontSize = 20.sp,
                                 fontWeight = FontWeight.Bold,
                                 color = Color.White
@@ -216,7 +308,7 @@ fun ExerciseScreen(navController: NavController) {
                                 )
                             }
                         },
-                        colors = TopAppBarDefaults.topAppBarColors( //smallTopAppBarColors(
+                        colors = TopAppBarDefaults.topAppBarColors(
                             containerColor = Color.Transparent,
                             titleContentColor = Color.White
                         ),
@@ -224,18 +316,19 @@ fun ExerciseScreen(navController: NavController) {
                     )
                 }
 
-                Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+                Column(modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp)) {
                     when {
                         loading -> {
                             CircularProgressIndicator()
                             Spacer(modifier = Modifier.height(16.dp))
                             Text(
-                                text = "Loading exercises...",
+                                text = "Loading...",
                                 fontSize = 18.sp,
                                 color = MaterialTheme.colorScheme.onSurface
                             )
                         }
-
                         errorMessage != null -> {
                             Text(
                                 text = errorMessage!!,
@@ -243,10 +336,46 @@ fun ExerciseScreen(navController: NavController) {
                                 color = MaterialTheme.colorScheme.error
                             )
                         }
-
-                        else -> {
+                        selectedMuscleGroupId == null -> {
                             Text(
-                                text = "Exercises:",
+                                text = "Muscle Groups:",
+                                fontSize = 18.sp,
+                                color = MaterialTheme.colorScheme.onSurface,
+                                fontWeight = FontWeight.Bold
+                            )
+
+                            if (muscleGroups.isEmpty()) {
+                                Text(
+                                    text = "No muscle groups available.",
+                                    fontSize = 16.sp,
+                                    color = MaterialTheme.colorScheme.onSurface
+                                )
+                            } else {
+                                LazyColumn {
+                                    items(muscleGroups) { muscleGroup ->
+                                        Column(modifier = Modifier
+                                            .padding(vertical = 8.dp)
+                                            .background(MaterialTheme.colorScheme.primaryContainer)
+                                            .clickable {
+                                                selectedMuscleGroupId = muscleGroup.id
+                                                loading = true
+                                            }) {
+                                            Text(
+                                                text = muscleGroup.name,
+                                                fontSize = 16.sp,
+                                                color = MaterialTheme.colorScheme.onSurface,
+                                                fontWeight = FontWeight.Bold
+                                            )
+                                            SvgImage(url = "https://wger.de${muscleGroup.image_url_main}")
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        else -> {
+
+                            Text(
+                                text = "Exercises for ${selectedMuscleGroupId} ${muscleGroups.find { it.id == selectedMuscleGroupId }?.name}:",
                                 fontSize = 18.sp,
                                 color = MaterialTheme.colorScheme.onSurface,
                                 fontWeight = FontWeight.Bold
@@ -261,13 +390,11 @@ fun ExerciseScreen(navController: NavController) {
                             } else {
                                 LazyColumn {
                                     items(exercises) { exercise ->
-                                        Column(modifier = Modifier.padding(vertical = 8.dp).background(MaterialTheme.colorScheme.primaryContainer)) {
+                                        Column(modifier = Modifier
+                                            .padding(vertical = 8.dp)
+                                            .background(MaterialTheme.colorScheme.primaryContainer)) {
                                             Text(
-                                                text = "Exercise name: ${
-                                                    extractExerciseName(
-                                                        exercise.image.toString()
-                                                    )
-                                                }",
+                                                text = exercise.name + exercise.muscles,
                                                 fontSize = 16.sp,
                                                 color = MaterialTheme.colorScheme.onSurface,
                                                 fontWeight = FontWeight.Bold
@@ -276,12 +403,14 @@ fun ExerciseScreen(navController: NavController) {
                                                 painter = rememberAsyncImagePainter(
                                                     ImageRequest.Builder(
                                                         LocalContext.current
-                                                    ).data(data = exercise.image).apply(block = fun ImageRequest.Builder.() {
+                                                    ).data(data = exercise.image?.image).apply(block = fun ImageRequest.Builder.() {
                                                         placeholder(R.drawable.user)
                                                     }).build()
                                                 ),
                                                 contentDescription = null,
-                                                modifier = Modifier.fillMaxWidth().height(200.dp)
+                                                modifier = Modifier
+                                                    .fillMaxWidth()
+                                                    .height(200.dp)
                                             )
                                         }
                                     }
@@ -297,19 +426,36 @@ fun ExerciseScreen(navController: NavController) {
     }
 }
 
+@Composable
+fun SvgImage(url: String, modifier: Modifier = Modifier) {
+    val painter = rememberAsyncImagePainter(
+        ImageRequest.Builder(LocalContext.current)
+            .data(url)
+            .decoderFactory(SvgDecoder.Factory())
+            .placeholder(R.drawable.user)
+            .error(R.drawable.light_weight_logo)
+            .build()
+    )
+
+    Image(
+        painter = painter,
+        contentDescription = null,
+        contentScale = ContentScale.Fit,
+        modifier = modifier
+    )
+}
+
 fun extractExerciseName(imageUrl: String): String {
     return imageUrl.split("/").last()
         .substringBeforeLast(".")
         .replace("-", " ")
         .split(" ")
-        .joinToString(" ") { it -> it.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.ROOT) else it.toString() } }
+        .joinToString(" ") { it.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.ROOT) else it.toString() } }
 }
-
-
 
 @Preview(showBackground = true)
 @Composable
-fun ExerciseScreenPreview() {
+fun MuscleGroupScreenPreview() {
     LightWeightTheme {
         val navController = rememberNavController()
         ExerciseScreen(navController)

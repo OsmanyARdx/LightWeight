@@ -25,6 +25,9 @@ dependencyResolutionManagement {
             library("core-ktx", "androidx.core:core-ktx:1.10.0")
             library("activity-compose", "androidx.activity:activity-compose:1.7.0")
             library("material3", "androidx.compose.material3:material3:1.0.1")
+
+            library("coil-compose", "io.coil-kt:coil-compose:2.1.0")
+            library("coil-svg", "io.coil-kt:coil-svg:2.1.0")
         }
     }
 }

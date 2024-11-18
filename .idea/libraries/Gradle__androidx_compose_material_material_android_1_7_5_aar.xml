@@ -1,9 +1,9 @@
 <component name="libraryTable">
   <library name="Gradle: androidx.compose.material:material-android:1.7.5@aar" external-system-id="GRADLE">
     <CLASSES>
-      <root url="jar://$USER_HOME$/.gradle/caches/transforms-4/4672879de4704b5a380812255a78129b/transformed/material-release/jars/classes.jar!/" />
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-4/4672879de4704b5a380812255a78129b/transformed/material-release/res" />
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-4/4672879de4704b5a380812255a78129b/transformed/material-release/AndroidManifest.xml" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-4/0f075aff6e04fa21fb8efde91b29575a/transformed/material-release/AndroidManifest.xml" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-4/0f075aff6e04fa21fb8efde91b29575a/transformed/material-release/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-4/0f075aff6e04fa21fb8efde91b29575a/transformed/material-release/res" />
     </CLASSES>
     <JAVADOC />
     <SOURCES>
