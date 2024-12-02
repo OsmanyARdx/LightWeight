@@ -1,20 +1,40 @@
-import android.graphics.Color
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color.Companion.Black
 import androidx.compose.ui.graphics.Color.Companion.White
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
@@ -22,17 +42,19 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.lightweight.R
+import com.example.lightweight.data.DatabaseProvider
+import com.example.lightweight.data.User
+import com.example.lightweight.hashPassword
 import com.example.lightweight.ui.theme.limeGreen
-import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
-import com.example.lightweight.hashPassword // Import Utils.kt to hash the password
 
 @Composable
 fun RegisterScreen(onRegistrationSuccess: () -> Unit, onBack: () -> Unit) {
-    val db = FirebaseFirestore.getInstance()
+    val context = LocalContext.current
+    val db = DatabaseProvider.getDatabase(context)
+    val userDao = db.userDao()
 
     var email by remember { mutableStateOf("") }
     var username by remember { mutableStateOf("") }
@@ -82,47 +104,25 @@ fun RegisterScreen(onRegistrationSuccess: () -> Unit, onBack: () -> Unit) {
     suspend fun performRegistration() {
         if (validateEmail(email) && validatePassword(password) && validateDateOfBirth(dateOfBirth)) {
             try {
-                val emailQuery = db.collection("users")
-                    .whereEqualTo("email", email)
-                    .get()
-                    .await()
-
-                if (emailQuery.documents.isNotEmpty()) {
+                val existingUser = userDao.findByEmail(email)
+                if (existingUser != null) {
                     emailError = "This email is already in use. Please use a different email."
                     return
                 }
 
-                // Use hashPassword
                 val hashedPassword = hashPassword(password)
 
-                val passwordQuery = db.collection("users")
-                    .whereEqualTo("password", hashedPassword)
-                    .get()
-                    .await()
-
-                if (passwordQuery.documents.isNotEmpty()) {
-                    passwordError = "This password has been used. Please choose a different password."
-                    return
-                }
-
-                val user = hashMapOf(
-                    "email" to email,
-                    "username" to username,
-                    "firstName" to firstName,
-                    "lastName" to lastName,
-                    "dateOfBirth" to dateOfBirth,
-                    "password" to hashedPassword
+                val user = User(
+                    email = email,
+                    username = username,
+                    password = hashedPassword,
+                    firstName = firstName,
+                    lastName = lastName,
+                    dateOfBirth = dateOfBirth
                 )
 
-                db.collection("users")
-                    .add(user)
-                    .addOnSuccessListener {
-                        onRegistrationSuccess()
-                    }
-                    .addOnFailureListener { e ->
-                        registrationError = "Registration failed: ${e.message}"
-                    }
-
+                userDao.register(user)
+                onRegistrationSuccess()
             } catch (e: Exception) {
                 registrationError = "Registration failed: ${e.message}"
             }
@@ -131,8 +131,7 @@ fun RegisterScreen(onRegistrationSuccess: () -> Unit, onBack: () -> Unit) {
 
     Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
         LazyColumn(
-            modifier = Modifier
-                .fillMaxSize(),
+            modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Top
         ) {
@@ -319,6 +318,8 @@ fun RegisterScreen(onRegistrationSuccess: () -> Unit, onBack: () -> Unit) {
         }
     }
 }
+
+
 
 @Preview(showBackground = true)
 @Composable

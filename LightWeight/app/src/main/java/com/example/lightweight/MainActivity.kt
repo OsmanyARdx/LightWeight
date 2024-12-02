@@ -1,6 +1,5 @@
 package com.example.lightweight
 
-import DrawerContent
 import LoginScreen
 import NutritionScreen
 import RegisterScreen
@@ -25,7 +24,6 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
@@ -52,7 +50,6 @@ import com.example.lightweight.ui.theme.LightWeightTheme
 import com.example.lightweight.ui.theme.cyanGreen
 import com.example.lightweight.ui.theme.limeGreen
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
 

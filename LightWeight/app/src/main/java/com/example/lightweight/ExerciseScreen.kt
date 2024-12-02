@@ -8,17 +8,13 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -38,7 +34,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -50,19 +45,20 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberAsyncImagePainter
+import coil.decode.SvgDecoder
 import coil.request.ImageRequest
+import com.example.lightweight.data.DatabaseProvider
+import com.example.lightweight.data.Exercise
+import com.example.lightweight.data.MuscleGroup
 import com.example.lightweight.ui.theme.LightWeightTheme
 import com.example.lightweight.ui.theme.softGreen
-import com.google.gson.Gson
 import kotlinx.coroutines.launch
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
 import retrofit2.http.Header
-import java.util.Locale
-import coil.decode.SvgDecoder
 import retrofit2.http.Query
-import java.util.logging.Logger
+import java.util.Locale
 
 data class WgerExercise(
     val id: Int,
@@ -83,12 +79,12 @@ data class WgerExercise(
     val image: ExerciseImage?,
 )
 
-data class MuscleGroup(
+/*data class MuscleGroup(
     val id: Int,
     val name: String,
     val image_url_main: String?,
     val image_url_secondary: String?
-)
+)*/
 
 data class ExerciseImage(
     val id: Int,
@@ -183,62 +179,91 @@ suspend fun getAllExercises(token: String, api: WgerApiService): List<WgerExerci
 
 
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ExerciseScreen(navController: NavController) {
+    val context = LocalContext.current
+    val db = DatabaseProvider.getDatabase(context) // Access the RoomDB instance
+    val muscleGroupDao = db.muscleGroupDao()
+    val exerciseDao = db.exerciseDao()
+
     var muscleGroups by remember { mutableStateOf<List<MuscleGroup>>(emptyList()) }
-    var allExercises by remember { mutableStateOf<List<WgerExercise>>(emptyList()) }
-    var allImages by remember { mutableStateOf<List<ExerciseImage>>(emptyList()) }
-    var exercises by remember { mutableStateOf<List<WgerExercise>>(emptyList()) }
+    var exercises by remember { mutableStateOf<List<Exercise>>(emptyList()) }
     var loading by remember { mutableStateOf(true) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
     var selectedMuscleGroupId by remember { mutableStateOf<Int?>(null) }
 
+    val coroutineScope = rememberCoroutineScope()
 
+    // Fetch muscle groups and exercises from RoomDB or API
     LaunchedEffect(Unit) {
         loading = true
-        val token = "Token e5ea4eb8a0915c6e762a157e3924271f05769ade"
-        val api = WgerApi.retrofitService
-
         try {
-            val muscleResponse = api.getMuscleGroups(token)
-            muscleGroups = muscleResponse.results
+            // Load muscle groups from RoomDB
+            muscleGroups = muscleGroupDao.getAllMuscleGroups()
 
-            allExercises = getAllExercises(token, api)
-            val imageResponse = api.getImages(token)
-            allImages = imageResponse.results
+            if (muscleGroups.isEmpty()) {
+                // Fetch muscle groups from API
+                val api = WgerApi.retrofitService
+                val token = "Token e5ea4eb8a0915c6e762a157e3924271f05769ade"
 
+                val muscleResponse = api.getMuscleGroups(token)
+                val fetchedMuscleGroups = muscleResponse.results.map {
+                    MuscleGroup(
+                        id = it.id,
+                        name = it.name,
+                        image_url_main = it.image_url_main,
+                        image_url_secondary = it.image_url_secondary
+                    )
+                }
+
+                // Save to RoomDB
+                muscleGroupDao.insertMuscleGroups(fetchedMuscleGroups)
+                muscleGroups = fetchedMuscleGroups
+            }
         } catch (e: Exception) {
-            errorMessage = "An error occurred: ${e.localizedMessage}"
-            Log.e("ExerciseScreen", "Error: ${e.localizedMessage}", e)
+            errorMessage = "Failed to load muscle groups: ${e.message}"
         } finally {
             loading = false
         }
     }
 
+    // Fetch exercises for the selected muscle group
     LaunchedEffect(selectedMuscleGroupId) {
+        if (selectedMuscleGroupId == null) return@LaunchedEffect
         loading = true
         try {
-            exercises = if (selectedMuscleGroupId == null) {
-                emptyList()
-            } else {
-                allExercises.filter { exercise ->
-                    selectedMuscleGroupId in (exercise.muscles ?: emptyList())
-                }.mapNotNull { exercise ->
+            // Load exercises from RoomDB
+            exercises = exerciseDao.getExercisesByMuscle(selectedMuscleGroupId!!)
 
-                    val matchingImage = allImages.find { it.exercise_base == exercise.exercise_base }
+            if (exercises.isEmpty()) {
+                // Fetch exercises from API
+                val api = WgerApi.retrofitService
+                val token = "Token e5ea4eb8a0915c6e762a157e3924271f05769ade"
 
-                    if (matchingImage != null) {
-                        exercise.copy(image = matchingImage)
-                    } else {
-                        null
-                    }
+                val allExercises = getAllExercises(token, api)
+                val filteredExercises = allExercises.filter { exercise ->
+                    selectedMuscleGroupId in exercise.muscles
+                }.map {
+                    Exercise(
+                        uuid = it.uuid,
+                        name = it.name,
+                        exercise_base = it.exercise_base,
+                        description = it.description,
+                        category = it.category,
+                        muscles = it.muscles,
+                        muscles_secondary = it.muscles_secondary,
+                        equipment = it.equipment,
+                        image_url = it.image?.image
+                    )
                 }
+
+                // Save to RoomDB
+                exerciseDao.insertExercises(filteredExercises)
+                exercises = filteredExercises
             }
         } catch (e: Exception) {
-            errorMessage = "An error occurred: ${e.localizedMessage}"
-            Log.e("Filtered", "Error: ${e.localizedMessage}", e)
+            errorMessage = "Failed to load exercises: ${e.message}"
         } finally {
             loading = false
         }
@@ -247,6 +272,7 @@ fun ExerciseScreen(navController: NavController) {
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
 
+    // UI Layout
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
@@ -266,160 +292,86 @@ fun ExerciseScreen(navController: NavController) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(
-                    color = MaterialTheme.colorScheme.primary,
-                    shape = RoundedCornerShape(16.dp)
-                )
+                .background(MaterialTheme.colorScheme.surface)
         ) {
             Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(MaterialTheme.colorScheme.surface),
+                modifier = Modifier.fillMaxSize(),
                 horizontalAlignment = Alignment.Start,
                 verticalArrangement = Arrangement.Top
             ) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 8.dp, vertical = 8.dp)
-                        .clip(RoundedCornerShape(24.dp))
-                        .background(
-                            color = softGreen,
-                            shape = RoundedCornerShape(24.dp)
+                TopAppBar(
+                    title = {
+                        Text(
+                            text = "Muscle Groups",
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.White
                         )
-                ) {
-                    TopAppBar(
-                        title = {
-                            Text(
-                                text = "Muscle Groups",
-                                fontSize = 20.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = Color.White
+                    },
+                    navigationIcon = {
+                        IconButton(onClick = { scope.launch { drawerState.open() } }) {
+                            Image(
+                                painter = painterResource(id = R.drawable.user),
+                                contentDescription = "Profile Image",
+                                modifier = Modifier.size(40.dp)
                             )
-                        },
-                        navigationIcon = {
-                            IconButton(onClick = { scope.launch { drawerState.open() } }) {
-                                Image(
-                                    painter = painterResource(id = R.drawable.user),
-                                    contentDescription = "Profile Image",
+                        }
+                    },
+                    colors = TopAppBarDefaults.topAppBarColors(containerColor = softGreen)
+                )
+
+                if (loading) {
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        CircularProgressIndicator()
+                    }
+                } else if (errorMessage != null) {
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        Text(text = errorMessage!!, color = MaterialTheme.colorScheme.error)
+                    }
+                } else {
+                    if (selectedMuscleGroupId == null) {
+                        LazyColumn(modifier = Modifier.fillMaxSize()) {
+                            items(muscleGroups) { muscleGroup ->
+                                Column(
                                     modifier = Modifier
-                                        .size(40.dp)
-                                        .padding(4.dp)
-                                )
-                            }
-                        },
-                        colors = TopAppBarDefaults.topAppBarColors(
-                            containerColor = Color.Transparent,
-                            titleContentColor = Color.White
-                        ),
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                }
-
-                Column(modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp)) {
-                    when {
-                        loading -> {
-                            CircularProgressIndicator()
-                            Spacer(modifier = Modifier.height(16.dp))
-                            Text(
-                                text = "Loading...",
-                                fontSize = 18.sp,
-                                color = MaterialTheme.colorScheme.onSurface
-                            )
-                        }
-                        errorMessage != null -> {
-                            Text(
-                                text = errorMessage!!,
-                                fontSize = 18.sp,
-                                color = MaterialTheme.colorScheme.error
-                            )
-                        }
-                        selectedMuscleGroupId == null -> {
-                            Text(
-                                text = "Muscle Groups:",
-                                fontSize = 18.sp,
-                                color = MaterialTheme.colorScheme.onSurface,
-                                fontWeight = FontWeight.Bold
-                            )
-
-                            if (muscleGroups.isEmpty()) {
-                                Text(
-                                    text = "No muscle groups available.",
-                                    fontSize = 16.sp,
-                                    color = MaterialTheme.colorScheme.onSurface
-                                )
-                            } else {
-                                LazyColumn {
-                                    items(muscleGroups) { muscleGroup ->
-                                        Column(modifier = Modifier
-                                            .padding(vertical = 8.dp)
-                                            .background(MaterialTheme.colorScheme.primaryContainer)
-                                            .clickable {
-                                                selectedMuscleGroupId = muscleGroup.id
-                                                loading = true
-                                            }) {
-                                            Text(
-                                                text = muscleGroup.name,
-                                                fontSize = 16.sp,
-                                                color = MaterialTheme.colorScheme.onSurface,
-                                                fontWeight = FontWeight.Bold
-                                            )
-                                            SvgImage(url = "https://wger.de${muscleGroup.image_url_main}")
+                                        .padding(8.dp)
+                                        .clickable {
+                                            selectedMuscleGroupId = muscleGroup.id
                                         }
-                                    }
+                                ) {
+                                    Text(
+                                        text = muscleGroup.name,
+                                        fontSize = 16.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        modifier = Modifier.padding(8.dp)
+                                    )
+                                    SvgImage(url = muscleGroup.image_url_main.orEmpty())
                                 }
                             }
                         }
-                        else -> {
-
-                            Text(
-                                text = "Exercises for ${selectedMuscleGroupId} ${muscleGroups.find { it.id == selectedMuscleGroupId }?.name}:",
-                                fontSize = 18.sp,
-                                color = MaterialTheme.colorScheme.onSurface,
-                                fontWeight = FontWeight.Bold
-                            )
-
-                            if (exercises.isEmpty()) {
-                                Text(
-                                    text = "No exercises available.",
-                                    fontSize = 16.sp,
-                                    color = MaterialTheme.colorScheme.onSurface
-                                )
-                            } else {
-                                LazyColumn {
-                                    items(exercises) { exercise ->
-                                        Column(modifier = Modifier
-                                            .padding(vertical = 8.dp)
-                                            .background(MaterialTheme.colorScheme.primaryContainer)) {
-                                            Text(
-                                                text = exercise.name + exercise.muscles,
-                                                fontSize = 16.sp,
-                                                color = MaterialTheme.colorScheme.onSurface,
-                                                fontWeight = FontWeight.Bold
-                                            )
-                                            Image(
-                                                painter = rememberAsyncImagePainter(
-                                                    ImageRequest.Builder(
-                                                        LocalContext.current
-                                                    ).data(data = exercise.image?.image).apply(block = fun ImageRequest.Builder.() {
-                                                        placeholder(R.drawable.user)
-                                                    }).build()
-                                                ),
-                                                contentDescription = null,
-                                                modifier = Modifier
-                                                    .fillMaxWidth()
-                                                    .height(200.dp)
-                                            )
-                                        }
-                                    }
+                    } else {
+                        LazyColumn(modifier = Modifier.fillMaxSize()) {
+                            items(exercises) { exercise ->
+                                Column(
+                                    modifier = Modifier
+                                        .padding(8.dp)
+                                ) {
+                                    Text(
+                                        text = exercise.name,
+                                        fontSize = 16.sp,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                    SvgImage(url = exercise.image_url.orEmpty())
                                 }
                             }
                         }
                     }
-
-                    Spacer(modifier = Modifier.height(16.dp))
                 }
             }
         }
