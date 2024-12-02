@@ -1,5 +1,6 @@
 package com.example.lightweight.data
 
+import com.example.lightweight.hashPassword
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -29,6 +30,7 @@ class UserRepository(private val userDao: UserDao) {
     suspend fun loginUser(username: String, password: String): Result<User> = withContext(Dispatchers.IO) {
         try {
             val hashedPassword = hashPassword(password)
+            println("Passss: " + hashedPassword)
             val user = userDao.getUserByUsernameAndPassword(username, hashedPassword)
             if (user != null) {
                 Result.success(user)
@@ -43,8 +45,8 @@ class UserRepository(private val userDao: UserDao) {
     /**
      * Utility function to hash a password.
      */
-    private fun hashPassword(password: String): String {
+    private fun hashPassword1(password: String): String {
         // Simple example. Replace this with a robust hashing mechanism.
-        return password.hashCode().toString()
+        return hashPassword(password)
     }
 }

@@ -2,7 +2,10 @@ plugins {
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
-    id("com.google.gms.google-services")
+
+    kotlin("kapt")
+
+
 }
 
 android {
@@ -68,7 +71,14 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.espresso.core)
     implementation(libs.androidx.constraintlayout.compose.android)
+
+
+
     implementation("androidx.room:room-common:2.6.1")
+    kapt("androidx.room:room-compiler:2.6.1")
+
+    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.2.0")
+
     implementation("androidx.room:room-ktx:2.6.1")
 
 
