@@ -15,6 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color.Companion.Black
 import androidx.compose.ui.graphics.Color.Companion.White
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
@@ -22,8 +23,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.lightweight.R
+import com.example.lightweight.data.AppDatabase
+import com.example.lightweight.data.User
+import com.example.lightweight.data.UserDao
+import com.example.lightweight.data.UserRepository
 import com.example.lightweight.ui.theme.limeGreen
-import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -32,7 +36,11 @@ import com.example.lightweight.hashPassword // Import Utils.kt to hash the passw
 
 @Composable
 fun RegisterScreen(onRegistrationSuccess: () -> Unit, onBack: () -> Unit) {
-    val db = FirebaseFirestore.getInstance()
+
+    val db = AppDatabase.getDatabase(LocalContext.current)
+    val userDao = db.userDao()
+
+    val userRepository = UserRepository(userDao)
 
     var email by remember { mutableStateOf("") }
     var username by remember { mutableStateOf("") }
@@ -79,55 +87,32 @@ fun RegisterScreen(onRegistrationSuccess: () -> Unit, onBack: () -> Unit) {
         return true
     }
 
-    suspend fun performRegistration() {
+    suspend fun performRegistration(userRepository: UserRepository) {
         if (validateEmail(email) && validatePassword(password) && validateDateOfBirth(dateOfBirth)) {
-            try {
-                val emailQuery = db.collection("users")
-                    .whereEqualTo("email", email)
-                    .get()
-                    .await()
+            val hashedPassword = hashPassword(password)
 
-                if (emailQuery.documents.isNotEmpty()) {
-                    emailError = "This email is already in use. Please use a different email."
-                    return
+            val newUser = User(
+                email = email,
+                username = username,
+                firstName = firstName,
+                lastName = lastName,
+                dateOfBirth = dateOfBirth,
+                password = hashedPassword
+            )
+
+            val result = userRepository.registerUser(newUser)
+            result.fold(
+                onSuccess = {
+                    onRegistrationSuccess()
+                },
+                onFailure = { error ->
+                    registrationError = "Registration failed: ${error.message}"
                 }
-
-                // Use hashPassword
-                val hashedPassword = hashPassword(password)
-
-                val passwordQuery = db.collection("users")
-                    .whereEqualTo("password", hashedPassword)
-                    .get()
-                    .await()
-
-                if (passwordQuery.documents.isNotEmpty()) {
-                    passwordError = "This password has been used. Please choose a different password."
-                    return
-                }
-
-                val user = hashMapOf(
-                    "email" to email,
-                    "username" to username,
-                    "firstName" to firstName,
-                    "lastName" to lastName,
-                    "dateOfBirth" to dateOfBirth,
-                    "password" to hashedPassword
-                )
-
-                db.collection("users")
-                    .add(user)
-                    .addOnSuccessListener {
-                        onRegistrationSuccess()
-                    }
-                    .addOnFailureListener { e ->
-                        registrationError = "Registration failed: ${e.message}"
-                    }
-
-            } catch (e: Exception) {
-                registrationError = "Registration failed: ${e.message}"
-            }
+            )
         }
     }
+
+
 
     Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
         LazyColumn(
@@ -290,7 +275,7 @@ fun RegisterScreen(onRegistrationSuccess: () -> Unit, onBack: () -> Unit) {
                 Button(
                     onClick = {
                         CoroutineScope(Dispatchers.IO).launch {
-                            performRegistration()
+                            performRegistration(userRepository)
                         }
                     },
                     modifier = Modifier

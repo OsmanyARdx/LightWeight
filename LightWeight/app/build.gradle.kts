@@ -68,6 +68,8 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.espresso.core)
     implementation(libs.androidx.constraintlayout.compose.android)
+    implementation("androidx.room:room-common:2.6.1")
+    implementation("androidx.room:room-ktx:2.6.1")
 
 
     testImplementation(libs.junit)
