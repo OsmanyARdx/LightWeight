@@ -5,7 +5,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 class UserRepository(private val userDao: UserDao,
-                     private val weightLogDao: WeightLogDao
+                     private val weightLogDao: WeightLogDao,
+                     private val imageDao: ImageDao
 ) {
 
     /**
@@ -72,16 +73,40 @@ class UserRepository(private val userDao: UserDao,
             Result.failure(e)
         }
     }
-
-    suspend fun getUserByUsername(username: String): User? {
-        return try {
-            userDao.getUserByUsername(username)
+    // Insert a profile image
+    suspend fun insertImage(image: Image): Result<Unit> = withContext(Dispatchers.IO) {
+        try {
+            imageDao.insertImage(image)
+            Result.success(Unit)
         } catch (e: Exception) {
-            // Handle any errors, such as database connection issues
-            e.printStackTrace()
-            null
+            Result.failure(e)
         }
     }
+
+    // Update image in the database
+    suspend fun updateImage(image: Image): Result<Unit> = withContext(Dispatchers.IO) {
+        try {
+
+            imageDao.deleteImageByUserId(image.userId)
+
+
+
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    // Retrieve image by user ID
+    suspend fun getImageByUserId(userId: Int): Result<Image?> = withContext(Dispatchers.IO) {
+        try {
+            val image = imageDao.getImageByUserId(userId)
+            Result.success(image)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
 
     /**
      * Utility function to hash a password.

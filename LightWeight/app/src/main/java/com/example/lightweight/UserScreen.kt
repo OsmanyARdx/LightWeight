@@ -46,7 +46,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.navigation.NavHostController
+import coil.compose.rememberAsyncImagePainter
+import coil.compose.rememberImagePainter
 import com.example.lightweight.data.AppDatabase
+import com.example.lightweight.data.UserRepository
 import com.example.lightweight.data.WeightLog
 import com.example.lightweight.ui.theme.softGreen
 import com.github.mikephil.charting.charts.LineChart
@@ -70,13 +73,25 @@ fun UserScreen(navController: NavHostController,userID:Int) {
     val db = AppDatabase.getDatabase(LocalContext.current)
     val weightLogDao = db.weightLogDao()
     val userDao = db.userDao()
+    val imageDao = db.imageDao()
+    val userRepository = UserRepository(userDao,weightLogDao, imageDao)
     var weightLogs by remember { mutableStateOf(listOf<WeightLog>()) }
     var firstname by remember { mutableStateOf("") }
     var lastname by remember { mutableStateOf("") }
+    val imageUrl = remember { mutableStateOf("") }
 
     LaunchedEffect(userID) {
+        userRepository.getImageByUserId(userID).fold(
+            onSuccess = { image ->
+                imageUrl.value = image?.profilePicture ?: "android.resource://com.example.lightweight/drawable/light_weight_logo"
+            },
+            onFailure = { error ->
+                imageUrl.value = "android.resource://com.example.lightweight/drawable/light_weight_logo"
 
-       weightLogs = weightLogDao.getWeightLogsByUserId(userID)
+            }
+        )
+
+    weightLogs = weightLogDao.getWeightLogsByUserId(userID)
         firstname = userDao.getFirstNameByUserId(userID).toString()
         lastname = userDao.getLastNameByUserId(userID).toString()
     }
@@ -168,14 +183,16 @@ fun UserScreen(navController: NavHostController,userID:Int) {
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Image(
-                                painter = painterResource(id = R.drawable.light_weight_logo),
-                                contentDescription = "Profile Image",
+                                painter = rememberAsyncImagePainter(imageUrl.value),
+                                contentDescription = "User Profile Picture",
                                 modifier = Modifier
-                                    .size(80.dp)
-                                    .padding(0.dp)
+                                    .size(100.dp)
+                                    .padding(3.dp)
+                                    .clickable {
+                                        navController.navigate("change_profile_picture_screen/$userID")
+                                    }
                             )
 
-                            Spacer(modifier = Modifier.width(16.dp))
 
                             Column(modifier = Modifier.fillMaxWidth(0.8f)) {
                                 Text(
@@ -192,21 +209,21 @@ fun UserScreen(navController: NavHostController,userID:Int) {
                         }
                     }
 
-                    item { Spacer(modifier = Modifier.height(24.dp)) }
+                    item { Spacer(modifier = Modifier.height(12.dp)) }
 
                     // Graph Display
                     item {
                         Column(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(15.dp),
+                                .padding(12.dp),
                             horizontalAlignment = Alignment.CenterHorizontally,
                             verticalArrangement = Arrangement.Top
                         ) {
                             // Title: Weight Progress
                             Text(
                                 text = "Weight Progress",
-                                fontSize = 20.sp,
+                                fontSize = 16.sp,
                                 fontWeight = FontWeight.Bold,
                                 modifier = Modifier.padding(bottom = 15.dp)
                             )
@@ -216,7 +233,7 @@ fun UserScreen(navController: NavHostController,userID:Int) {
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .height(300.dp)
-                                    .padding(10.dp)
+                                    .padding(8.dp)
                                     .background(
                                         color = MaterialTheme.colorScheme.surfaceVariant,
                                         shape = RoundedCornerShape(16.dp)
@@ -285,7 +302,7 @@ fun UserScreen(navController: NavHostController,userID:Int) {
                         }
                     }
 
-                    item { Spacer(modifier = Modifier.height(24.dp)) }
+                    item { Spacer(modifier = Modifier.height(20.dp)) }
 
                     item {
                         Row(

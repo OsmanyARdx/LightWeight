@@ -15,9 +15,11 @@ fun DrawerContent(navController: NavController, userId: Int, onClose: () -> Unit
     val db = AppDatabase.getDatabase(LocalContext.current)
     val userDao = db.userDao()
     val weightLogDao = db.weightLogDao()
+    val imageDao = db.imageDao()
     val userRepository = UserRepository(
         userDao,
-        weightLogDao
+        weightLogDao,
+        imageDao
     )
 
     Column(

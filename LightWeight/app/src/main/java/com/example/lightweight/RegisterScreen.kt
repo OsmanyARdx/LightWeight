@@ -3,6 +3,7 @@ import android.graphics.Color
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -43,10 +44,10 @@ fun RegisterScreen(onRegistrationSuccess: () -> Unit, onBack: () -> Unit) {
     val db = AppDatabase.getDatabase(LocalContext.current)
     val userDao = db.userDao()
     val weightLogDao = db.weightLogDao()
+    val imageDao = db.imageDao()
 
 
-
-    val userRepository = UserRepository(userDao,weightLogDao)
+    val userRepository = UserRepository(userDao,weightLogDao, imageDao)
     val coroutineScope = rememberCoroutineScope()
 
     var email by remember { mutableStateOf("") }
@@ -60,6 +61,8 @@ fun RegisterScreen(onRegistrationSuccess: () -> Unit, onBack: () -> Unit) {
     var emailError by remember { mutableStateOf("") }
     var dobError by remember { mutableStateOf("") }
     var registrationError by remember { mutableStateOf("") }
+    val defaultImageUrl = "https://example.com/default_profile_picture.png"
+
 
     fun validatePassword(password: String): Boolean {
         val hasUppercase = password.any { it.isUpperCase() }
@@ -99,14 +102,17 @@ fun RegisterScreen(onRegistrationSuccess: () -> Unit, onBack: () -> Unit) {
         if (validateEmail(email) && validatePassword(password) && validateDateOfBirth(dateOfBirth)) {
             val hashedPassword = hashPassword(password)
 
+
+
             val newUser = User(
                 email = email,
                 username = username,
                 firstName = firstName,
                 lastName = lastName,
                 dateOfBirth = dateOfBirth,
-                password = hashedPassword
+                password = hashedPassword,
             )
+
 
             try {
                 userRepository.registerUser(newUser).fold(
@@ -174,13 +180,6 @@ fun RegisterScreen(onRegistrationSuccess: () -> Unit, onBack: () -> Unit) {
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                Image(
-                    painter = painterResource(id = R.drawable.light_weight_logo),
-                    contentDescription = "Profile Image",
-                    modifier = Modifier
-                        .size(170.dp)
-                        .padding(4.dp)
-                )
 
                 Spacer(modifier = Modifier.height(16.dp))
             }
