@@ -2,8 +2,8 @@
   <library name="Gradle: androidx.constraintlayout:constraintlayout-compose-android:1.1.0@aar" external-system-id="GRADLE">
     <CLASSES>
       <root url="file://$USER_HOME$/.gradle/caches/transforms-4/5b4b5ca76cdbaff40318b43f5b7a327f/transformed/constraintlayout-compose-release/res" />
-      <root url="jar://$USER_HOME$/.gradle/caches/transforms-4/5b4b5ca76cdbaff40318b43f5b7a327f/transformed/constraintlayout-compose-release/jars/classes.jar!/" />
       <root url="file://$USER_HOME$/.gradle/caches/transforms-4/5b4b5ca76cdbaff40318b43f5b7a327f/transformed/constraintlayout-compose-release/AndroidManifest.xml" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-4/5b4b5ca76cdbaff40318b43f5b7a327f/transformed/constraintlayout-compose-release/jars/classes.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES>

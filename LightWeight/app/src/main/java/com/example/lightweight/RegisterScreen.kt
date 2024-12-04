@@ -33,14 +33,19 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import com.example.lightweight.hashPassword // Import Utils.kt to hash the password
+import kotlinx.coroutines.withContext
 
 @Composable
 fun RegisterScreen(onRegistrationSuccess: () -> Unit, onBack: () -> Unit) {
 
     val db = AppDatabase.getDatabase(LocalContext.current)
     val userDao = db.userDao()
+    val weightLogDao = db.weightLogDao()
 
-    val userRepository = UserRepository(userDao)
+
+
+    val userRepository = UserRepository(userDao,weightLogDao)
+    val coroutineScope = rememberCoroutineScope()
 
     var email by remember { mutableStateOf("") }
     var username by remember { mutableStateOf("") }
@@ -61,7 +66,8 @@ fun RegisterScreen(onRegistrationSuccess: () -> Unit, onBack: () -> Unit) {
         val isValidLength = password.length >= 5
 
         if (!hasUppercase || !hasLowercase || !hasNumber || !isValidLength) {
-            passwordError = "Password must contain at least one uppercase letter, one lowercase letter, one number, and be at least 5 characters long."
+            passwordError =
+                "Password must contain at least one uppercase letter, one lowercase letter, one number, and be at least 5 characters long."
             return false
         }
         passwordError = ""
@@ -100,17 +106,30 @@ fun RegisterScreen(onRegistrationSuccess: () -> Unit, onBack: () -> Unit) {
                 password = hashedPassword
             )
 
-            val result = userRepository.registerUser(newUser)
-            result.fold(
-                onSuccess = {
-                    onRegistrationSuccess()
-                },
-                onFailure = { error ->
-                    registrationError = "Registration failed: ${error.message}"
+            try {
+                userRepository.registerUser(newUser).fold(
+                    onSuccess = {
+                        // Ensure this runs on the main thread
+                        withContext(Dispatchers.Main) {
+                            onRegistrationSuccess()
+                        }
+                    },
+                    onFailure = { error ->
+                        // Ensure this runs on the main thread
+                        withContext(Dispatchers.Main) {
+                            registrationError = "Registration failed: ${error.message}"
+                        }
+                    }
+                )
+            } catch (e: Exception) {
+                // Ensure this runs on the main thread
+                withContext(Dispatchers.Main) {
+                    registrationError = "Unexpected error: ${e.message}"
                 }
-            )
+            }
         }
     }
+
 
 
 
@@ -272,6 +291,23 @@ fun RegisterScreen(onRegistrationSuccess: () -> Unit, onBack: () -> Unit) {
             }
 
             item {
+
+                Button(
+                    onClick = {
+                        coroutineScope.launch(Dispatchers.IO) {
+                            performRegistration(userRepository)
+                        }
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .border(2.dp, Black, RoundedCornerShape(50))
+                        .height(50.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = limeGreen)
+                ) {
+                    Text("Register")
+                }
+
+                /*item {
                 Button(
                     onClick = {
                         CoroutineScope(Dispatchers.IO).launch {
@@ -289,7 +325,7 @@ fun RegisterScreen(onRegistrationSuccess: () -> Unit, onBack: () -> Unit) {
                     colors = ButtonDefaults.buttonColors(containerColor = limeGreen)
                 ) {
                     Text("Register")
-                }
+                }*/
 
                 if (registrationError.isNotEmpty()) {
                     Spacer(modifier = Modifier.height(16.dp))
@@ -304,7 +340,6 @@ fun RegisterScreen(onRegistrationSuccess: () -> Unit, onBack: () -> Unit) {
         }
     }
 }
-
 @Preview(showBackground = true)
 @Composable
 fun PreviewRegisterScreen() {

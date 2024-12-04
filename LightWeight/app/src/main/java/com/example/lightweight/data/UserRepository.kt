@@ -4,7 +4,9 @@ import com.example.lightweight.hashPassword
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-class UserRepository(private val userDao: UserDao) {
+class UserRepository(private val userDao: UserDao,
+                     private val weightLogDao: WeightLogDao
+) {
 
     /**
      * Registers a new user.
@@ -41,7 +43,35 @@ class UserRepository(private val userDao: UserDao) {
             Result.failure(e)
         }
     }
-
+    suspend fun getWeightLogs(userId: Int): Result<List<WeightLog>> {
+        return try {
+            val logs = weightLogDao.getAllWeightLogsForUser(userId)
+            Result.success(logs)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+    suspend fun insertWeightLog(userId: Int, weight: String, date: String): Result<Unit> {
+        return try {
+            val newWeightLog = WeightLog(
+                userId = userId,
+                weight = weight,
+                date = date
+            )
+            weightLogDao.insertWeightLog(newWeightLog)
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+    suspend fun deleteWeightLog(id: Int): Result<Unit> {
+        return try {
+            weightLogDao.deleteWeightLogById(id)
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
     /**
      * Utility function to hash a password.
      */

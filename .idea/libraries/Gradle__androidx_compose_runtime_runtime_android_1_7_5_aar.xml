@@ -2,8 +2,8 @@
   <library name="Gradle: androidx.compose.runtime:runtime-android:1.7.5@aar" external-system-id="GRADLE">
     <CLASSES>
       <root url="file://$USER_HOME$/.gradle/caches/transforms-4/88e753b36a37099db76cfaab11f8f61a/transformed/runtime-release/res" />
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-4/88e753b36a37099db76cfaab11f8f61a/transformed/runtime-release/AndroidManifest.xml" />
       <root url="jar://$USER_HOME$/.gradle/caches/transforms-4/88e753b36a37099db76cfaab11f8f61a/transformed/runtime-release/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-4/88e753b36a37099db76cfaab11f8f61a/transformed/runtime-release/AndroidManifest.xml" />
     </CLASSES>
     <JAVADOC />
     <SOURCES>
