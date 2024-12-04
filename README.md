@@ -6,4 +6,4 @@ LightWeight is a new fitness mobile application, developed by college students, 
 
 # Features
 Login/Sign-Up Page: Create a new account or log in to access your personalized exercise and nutrition details. <br />
-Home Page: 
+Home Page: Navigate towards the nutrition page, exercise page, or weight page.
