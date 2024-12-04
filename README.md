@@ -12,3 +12,9 @@ Exercise Page: Select a muscle group to view a list of excercises that utilize t
 Nutrition Page: Input the food you've eaten for nutritional information such as calories to appear  <br />
 
 # Screens
+![](Screenshot_1)
+![](Screenshot_2)
+![](Screenshot_3)
+![](Screenshot_4)
+![](Screenshot_5)
+![](Screenshot_6)
