@@ -13,5 +13,6 @@ interface WeightLogDao {
     @Query("DELETE FROM weight_logs WHERE id = :id")
     suspend fun deleteWeightLogById(id: Int)
 
-
+    @Query("SELECT * FROM weight_logs WHERE userid = :userID ORDER BY date ASC")
+    suspend fun getWeightLogsByUserId(userID: Int): List<WeightLog>
 }
