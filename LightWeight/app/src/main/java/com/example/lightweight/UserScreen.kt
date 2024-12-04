@@ -75,6 +75,7 @@ fun UserScreen(navController: NavHostController,userID:Int) {
     var lastname by remember { mutableStateOf("") }
 
     LaunchedEffect(userID) {
+
        weightLogs = weightLogDao.getWeightLogsByUserId(userID)
         firstname = userDao.getFirstNameByUserId(userID).toString()
         lastname = userDao.getLastNameByUserId(userID).toString()
@@ -134,7 +135,7 @@ fun UserScreen(navController: NavHostController,userID:Int) {
                         navigationIcon = {
                             IconButton(onClick = { scope.launch { drawerState.open() } }) {
                                 Image(
-                                    painter = painterResource(id = R.drawable.user),
+                                    painter = painterResource(id = R.drawable.menubutton),
                                     contentDescription = "Profile Image",
                                     modifier = Modifier
                                         .size(40.dp)
@@ -187,11 +188,6 @@ fun UserScreen(navController: NavHostController,userID:Int) {
                                     fontWeight = FontWeight.Bold,
                                     color = MaterialTheme.colorScheme.onSurface
                                 )
-                                Text(
-                                    text = "Lower Text!",
-                                    fontSize = 16.sp,
-                                    color = MaterialTheme.colorScheme.onSurface
-                                )
                             }
                         }
                     }
@@ -200,36 +196,46 @@ fun UserScreen(navController: NavHostController,userID:Int) {
 
                     // Graph Display
                     item {
-                        Text(
-                            text = "Weight Progress",
-                            fontSize = 20.sp,
-                            fontWeight = FontWeight.Bold,
-                            modifier = Modifier.padding(15.dp)
-
-                        )
-                        Box(
+                        Column(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(300.dp)
-                                .padding(10.dp)
-                                .background(
-                                    color = MaterialTheme.colorScheme.surfaceVariant,
-                                    shape = RoundedCornerShape(16.dp)
-                                ),
-                            contentAlignment = Alignment.Center
+                                .padding(15.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Top
                         ) {
-                            if (weightLogs.isNotEmpty()) {
-                                WeightGraph(weightLogs)
-                            } else {
-                                Text(
-                                    text = "No data available",
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                                )
+                            // Title: Weight Progress
+                            Text(
+                                text = "Weight Progress",
+                                fontSize = 20.sp,
+                                fontWeight = FontWeight.Bold,
+                                modifier = Modifier.padding(bottom = 15.dp)
+                            )
+
+                            // Graph Box
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(300.dp)
+                                    .padding(10.dp)
+                                    .background(
+                                        color = MaterialTheme.colorScheme.surfaceVariant,
+                                        shape = RoundedCornerShape(16.dp)
+                                    ),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                if (weightLogs.isNotEmpty()) {
+                                    WeightGraph(weightLogs) // Display the graph if data is available
+                                } else {
+                                    Text(
+                                        text = "No data available",
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                }
                             }
                         }
-                    }
 
-                    item { Spacer(modifier = Modifier.height(10.dp)) }
+                    }
+                        item { Spacer(modifier = Modifier.height(10.dp)) }
 
                     item {
                         Row(

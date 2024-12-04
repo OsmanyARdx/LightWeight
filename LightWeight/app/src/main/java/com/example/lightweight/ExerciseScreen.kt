@@ -301,7 +301,7 @@ fun ExerciseScreen(navController: NavController, userID:Int) {
                         navigationIcon = {
                             IconButton(onClick = { scope.launch { drawerState.open() } }) {
                                 Image(
-                                    painter = painterResource(id = R.drawable.user),
+                                    painter = painterResource(id = R.drawable.menubutton),
                                     contentDescription = "Profile Image",
                                     modifier = Modifier
                                         .size(40.dp)

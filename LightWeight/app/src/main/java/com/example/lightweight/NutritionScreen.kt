@@ -171,7 +171,7 @@ fun NutritionScreen(
                         navigationIcon = {
                             IconButton(onClick = { scope.launch { drawerState.open() } }) {
                                 Image(
-                                    painter = painterResource(id = R.drawable.user),
+                                    painter = painterResource(id = R.drawable.menubutton),
                                     contentDescription = "App Logo",
                                     modifier = Modifier
                                         .size(40.dp)
