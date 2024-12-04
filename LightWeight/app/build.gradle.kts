@@ -54,8 +54,9 @@ android {
     }
 }
 
-dependencies {
 
+dependencies {
+    implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -76,9 +77,7 @@ dependencies {
 
     implementation("androidx.room:room-common:2.6.1")
     kapt("androidx.room:room-compiler:2.6.1")
-
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.2.0")
-
     implementation("androidx.room:room-ktx:2.6.1")
 
 
@@ -96,7 +95,6 @@ dependencies {
     implementation (libs.ui)
     implementation (libs.androidx.material)
     implementation (libs.ui.tooling.preview)
-    implementation (libs.androidx.activity.compose.v170)
     implementation (libs.coil.compose)
     implementation(libs.coil.svg)
 

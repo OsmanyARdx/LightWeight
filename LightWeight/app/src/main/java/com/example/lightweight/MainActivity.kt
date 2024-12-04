@@ -61,7 +61,6 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            val username = ""
             val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
             val navController = rememberNavController()
             val scope = rememberCoroutineScope()
@@ -102,7 +101,7 @@ fun LightWeightApp( navController: NavHostController,
             }
             composable("user_screen/{userId}") { backStackEntry ->
                 userId = backStackEntry.arguments?.getString("userId").toString().toInt()
-                UserScreen(navController = navController)
+                UserScreen(navController = navController,userId)
             }
             composable("register") {
                 RegisterScreen(

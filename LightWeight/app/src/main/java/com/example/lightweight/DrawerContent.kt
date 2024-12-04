@@ -4,24 +4,46 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.lightweight.data.AppDatabase
+import com.example.lightweight.data.UserRepository
 
 @Composable
 fun DrawerContent(navController: NavController, onClose: () -> Unit) {
+    val db = AppDatabase.getDatabase(LocalContext.current)
+    val userDao = db.userDao()
+    val weightLogDao = db.weightLogDao()
+    val userRepository = UserRepository(
+        userDao,
+        weightLogDao
+    )
+
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp),
         verticalArrangement = Arrangement.Top
     ) {
-
+        Text(
+            text = "Log Out",
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable {
+                    navController.navigate("login") {
+                        popUpTo("login") { inclusive = true }
+                    }
+                    onClose()
+                }
+                .padding(vertical = 12.dp)
+        )
         Text(
             text = "Home",
             modifier = Modifier
                 .fillMaxWidth()
                 .clickable {
-                    navController.navigate("user_screen") {
+                    navController.navigate("user_screen/{userId}") {
                         popUpTo("user_screen") { inclusive = true }
                     }
                     onClose()
