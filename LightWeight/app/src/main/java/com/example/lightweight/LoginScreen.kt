@@ -34,6 +34,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color.Companion.Black
 import androidx.compose.ui.graphics.Color.Companion.White
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
@@ -43,6 +44,8 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.lightweight.R
+import com.example.lightweight.data.AppDatabase
+import com.example.lightweight.data.UserRepository
 import com.example.lightweight.hashPassword
 import com.example.lightweight.ui.theme.limeGreen
 import com.google.firebase.firestore.FirebaseFirestore
@@ -53,36 +56,37 @@ import kotlinx.coroutines.tasks.await
 
 @Composable
 fun LoginScreen(navController: NavController) {
-    val db = FirebaseFirestore.getInstance()
     var username by remember { mutableStateOf("") }
+
     var password by remember { mutableStateOf("") }
     var isPasswordVisible by remember { mutableStateOf(false) }
     var loginError by remember { mutableStateOf("") }
 
+    val db = AppDatabase.getDatabase(LocalContext.current)
+    val userDao = db.userDao()
+    val weightLogDao = db.weightLogDao()
+
+    val userRepository = UserRepository(userDao,weightLogDao)
+
     suspend fun performLogin() {
         try {
-            val hashedPassword = hashPassword(password)
-            println("Attempting login with hashed password: $hashedPassword")
+            // Attempt login via UserRepository
+            val result = userRepository.loginUser(username, password)
 
-            val userQuery = db.collection("users")
-                .whereEqualTo("username", username)
-                .whereEqualTo("password", hashedPassword)
-                .get()
-                .await()
-
-            if (userQuery.documents.isNotEmpty()) {
+            result.onSuccess { user ->
+                // If login is successful, navigate to user screen
                 println("User found. Navigating to user screen.")
-                navController.navigate("user_screen")
-            } else {
-                println("No matching user found.")
-                loginError = "Invalid username or password"
+                navController.navigate("user_screen/${user.id}")
+
+            }.onFailure {
+                // If login fails, show error message
+                loginError = it.message ?: "Unknown error"
             }
         } catch (e: Exception) {
             println("Login error: ${e.message}")
             loginError = "Login failed: ${e.message}"
         }
     }
-
 
     Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
         Column(
@@ -198,9 +202,4 @@ fun LoginScreen(navController: NavController) {
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun PreviewLoginScreen() {
-    val navController = rememberNavController()
-    LoginScreen(navController)
-}
+

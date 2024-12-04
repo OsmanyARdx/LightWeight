@@ -1,6 +1,5 @@
 package com.example.lightweight
 
-import DrawerContent
 import LoginScreen
 import NutritionScreen
 import RegisterScreen
@@ -25,7 +24,6 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
@@ -48,9 +46,13 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.lightweight.data.AppDatabase
+import com.example.lightweight.data.UserRepository
 import com.example.lightweight.ui.theme.LightWeightTheme
 import com.example.lightweight.ui.theme.cyanGreen
 import com.example.lightweight.ui.theme.limeGreen
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -59,55 +61,78 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
+            val username = ""
             val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
             val navController = rememberNavController()
             val scope = rememberCoroutineScope()
+            val db = AppDatabase.getDatabase(applicationContext)
+            val userDao = db.userDao()
+            val weightLogDao = db.weightLogDao()
+            val userRepository = UserRepository(
+                userDao,
+                weightLogDao
+            )
 
-                LightWeightApp(navController, drawerState)
+            LightWeightApp(navController, drawerState,userRepository)
         }
     }
 }
 
 @Composable
-fun LightWeightApp(navController: NavHostController, drawerState: DrawerState) {
+fun LightWeightApp( navController: NavHostController,
+                    drawerState: DrawerState,
+                    repository: UserRepository) {
     LightWeightTheme {
         NavHost(navController = navController, startDestination = "splash") {
             composable("splash") {
                 SplashScreen(onSplashScreenTimeout = {
-                    navController.navigate("login_register")
+                    navController.navigate("login_register") {
+                        popUpTo("splash") { inclusive = true }
+                    }
                 })
             }
+
+            var userId = 0
+
             composable("login_register") {
                 LoginRegisterScreen(navController = navController)
             }
             composable("login") {
                 LoginScreen(navController = navController)
             }
+            composable("user_screen/{userId}") { backStackEntry ->
+                userId = backStackEntry.arguments?.getString("userId").toString().toInt()
+                UserScreen(navController = navController)
+            }
             composable("register") {
                 RegisterScreen(
                     onRegistrationSuccess = {
-                        navController.popBackStack("login_register", inclusive = false)
+                        navController.navigate("login_register") {
+                            popUpTo("register") { inclusive = true }
+                        }
                     },
                     onBack = {
                         navController.popBackStack()
                     }
                 )
             }
-            composable("user_screen") {
-                UserScreen(navController = navController)
-            }
             composable("weight_screen") {
-                WeightScreen(navController = navController)
+                WeightScreen(
+                    navController = navController,
+                    repository = repository,
+                    currentUserId = userId
+                )
             }
             composable("exercise_screen") {
                 ExerciseScreen(navController = navController)
             }
-            composable("nutrition_screen"){
+            composable("nutrition_screen") {
                 NutritionScreen(navController = navController)
             }
         }
     }
 }
+
 
 @Composable
 fun SplashScreen(onSplashScreenTimeout: () -> Unit) {
