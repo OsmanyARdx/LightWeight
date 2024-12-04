@@ -65,9 +65,12 @@ fun LoginScreen(navController: NavController) {
     val db = AppDatabase.getDatabase(LocalContext.current)
     val userDao = db.userDao()
     val weightLogDao = db.weightLogDao()
-
-    val userRepository = UserRepository(userDao,weightLogDao)
-
+    val imageDao = db.imageDao()
+    val userRepository = UserRepository(
+        userDao,
+        weightLogDao,
+        imageDao
+    )
     suspend fun performLogin() {
         try {
             // Attempt login via UserRepository

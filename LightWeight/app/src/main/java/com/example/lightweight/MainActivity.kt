@@ -67,9 +67,11 @@ class MainActivity : ComponentActivity() {
             val db = AppDatabase.getDatabase(applicationContext)
             val userDao = db.userDao()
             val weightLogDao = db.weightLogDao()
+            val imageDao = db.imageDao()
             val userRepository = UserRepository(
                 userDao,
-                weightLogDao
+                weightLogDao,
+                imageDao
             )
 
             LightWeightApp(navController, drawerState,userRepository)
@@ -128,6 +130,15 @@ fun LightWeightApp( navController: NavHostController,
             composable("nutrition_screen") {
                 NutritionScreen(navController = navController, userId)
             }
+            composable("change_profile_picture_screen/{userId}") { backStackEntry ->
+                val userId = backStackEntry.arguments?.getString("userId")?.toInt() ?: 0
+                ChangeProfilePictureScreen(
+                    userId = userId,
+                    navController = navController,
+                    repository = repository
+                )
+            }
+
         }
     }
 }

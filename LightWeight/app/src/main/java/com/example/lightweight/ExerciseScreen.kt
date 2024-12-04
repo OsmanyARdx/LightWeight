@@ -308,6 +308,7 @@ fun ExerciseScreen(navController: NavController, userID:Int) {
                                         .padding(4.dp)
                                 )
                             }
+
                         },
                         colors = TopAppBarDefaults.topAppBarColors(
                             containerColor = Color.Transparent,
@@ -357,6 +358,7 @@ fun ExerciseScreen(navController: NavController, userID:Int) {
                                         Column(modifier = Modifier
                                             .padding(vertical = 8.dp)
                                             .background(MaterialTheme.colorScheme.primaryContainer)
+                                            .fillMaxWidth()
                                             .clickable {
                                                 selectedMuscleGroupId = muscleGroup.id
                                                 loading = true
@@ -365,7 +367,10 @@ fun ExerciseScreen(navController: NavController, userID:Int) {
                                                 text = muscleGroup.name,
                                                 fontSize = 16.sp,
                                                 color = MaterialTheme.colorScheme.onSurface,
-                                                fontWeight = FontWeight.Bold
+                                                fontWeight = FontWeight.Bold,
+                                                modifier = Modifier
+                                                    .padding(8.dp)
+                                                    .align(Alignment.CenterHorizontally)
                                             )
                                             SvgImage(url = "https://wger.de${muscleGroup.image_url_main}")
                                         }
@@ -443,6 +448,8 @@ fun SvgImage(url: String, modifier: Modifier = Modifier) {
         contentDescription = null,
         contentScale = ContentScale.Fit,
         modifier = modifier
+            .fillMaxWidth()
+            .height(300.dp)
     )
 }
 

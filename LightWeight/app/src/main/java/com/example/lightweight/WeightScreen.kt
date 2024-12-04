@@ -3,6 +3,7 @@ package com.example.lightweight
 import DrawerContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -121,7 +122,14 @@ fun WeightScreen(navController: NavHostController, repository: UserRepository, c
                     ),
                     modifier = Modifier
                         .fillMaxWidth().padding(8.dp)
-                        .clip(RoundedCornerShape(bottomStart = 16.dp, bottomEnd = 16.dp, topStart = 16.dp, topEnd = 16.dp))
+                        .clip(
+                            RoundedCornerShape(
+                                bottomStart = 16.dp,
+                                bottomEnd = 16.dp,
+                                topStart = 16.dp,
+                                topEnd = 16.dp
+                            )
+                        )
                 )
 
 
@@ -190,7 +198,8 @@ fun WeightScreen(navController: NavHostController, repository: UserRepository, c
                     enabled = !isAdding,
                     modifier = Modifier.fillMaxWidth().padding(8.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = limeGreen)
+                        containerColor = limeGreen
+                    )
                 ) {
                     if (isAdding) {
                         CircularProgressIndicator(
@@ -204,7 +213,13 @@ fun WeightScreen(navController: NavHostController, repository: UserRepository, c
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                LazyColumn(modifier = Modifier.fillMaxWidth()) {
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(450.dp) // Height
+                        .border(2.dp, Color.Gray, RoundedCornerShape(8.dp))
+                        .padding(12.dp)
+                ) {
                     items(weightLogs) { log ->
                         Row(
                             modifier = Modifier
@@ -237,16 +252,16 @@ fun WeightScreen(navController: NavHostController, repository: UserRepository, c
                         }
                     }
                 }
-            }
 
-            if (snackbarMessage.isNotEmpty()) {
-                Snackbar(
-                    action = {
-                        TextButton(onClick = { snackbarMessage = "" }) { Text("OK") }
-                    },
-                    modifier = Modifier.padding(8.dp)
-                ) {
-                    Text(text = snackbarMessage)
+                if (snackbarMessage.isNotEmpty()) {
+                    Snackbar(
+                        action = {
+                            TextButton(onClick = { snackbarMessage = "" }) { Text("OK") }
+                        },
+                        modifier = Modifier.padding(8.dp)
+                    ) {
+                        Text(text = snackbarMessage)
+                    }
                 }
             }
         }
