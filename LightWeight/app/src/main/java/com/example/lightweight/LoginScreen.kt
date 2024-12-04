@@ -55,7 +55,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 
 @Composable
-fun LoginScreen(navController: NavController, currentUserId: Int) {
+fun LoginScreen(navController: NavController) {
     var username by remember { mutableStateOf("") }
 
     var password by remember { mutableStateOf("") }
@@ -67,9 +67,7 @@ fun LoginScreen(navController: NavController, currentUserId: Int) {
     val weightLogDao = db.weightLogDao()
 
     val userRepository = UserRepository(userDao,weightLogDao)
-    CoroutineScope(Dispatchers.Main).launch {
-        currentUserId = userRepository.getUserByUsername(username = username)?.id!!
-    }
+
     suspend fun performLogin() {
         try {
             // Attempt login via UserRepository
@@ -78,7 +76,8 @@ fun LoginScreen(navController: NavController, currentUserId: Int) {
             result.onSuccess { user ->
                 // If login is successful, navigate to user screen
                 println("User found. Navigating to user screen.")
-                navController.navigate("user_screen")
+                navController.navigate("user_screen/${user.id}")
+
             }.onFailure {
                 // If login fails, show error message
                 loginError = it.message ?: "Unknown error"
@@ -204,9 +203,3 @@ fun LoginScreen(navController: NavController, currentUserId: Int) {
 }
 
 
-@Preview(showBackground = true)
-@Composable
-fun PreviewLoginScreen() {
-    val navController = rememberNavController()
-    LoginScreen(navController)
-}

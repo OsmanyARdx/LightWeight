@@ -72,9 +72,8 @@ class MainActivity : ComponentActivity() {
                 userDao,
                 weightLogDao
             )
-            var currentUserId: Int? = null
 
-            LightWeightApp(navController, drawerState,userRepository,currentUserId)
+            LightWeightApp(navController, drawerState,userRepository)
         }
     }
 }
@@ -82,7 +81,7 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun LightWeightApp( navController: NavHostController,
                     drawerState: DrawerState,
-                    repository: UserRepository,currentUserId: Int) {
+                    repository: UserRepository) {
     LightWeightTheme {
         NavHost(navController = navController, startDestination = "splash") {
             composable("splash") {
@@ -92,11 +91,18 @@ fun LightWeightApp( navController: NavHostController,
                     }
                 })
             }
+
+            var userId = 0
+
             composable("login_register") {
                 LoginRegisterScreen(navController = navController)
             }
             composable("login") {
-                LoginScreen(navController = navController, currentUserId)
+                LoginScreen(navController = navController)
+            }
+            composable("user_screen/{userId}") { backStackEntry ->
+                userId = backStackEntry.arguments?.getString("userId").toString().toInt()
+                UserScreen(navController = navController)
             }
             composable("register") {
                 RegisterScreen(
@@ -110,14 +116,11 @@ fun LightWeightApp( navController: NavHostController,
                     }
                 )
             }
-            composable("user_screen") {
-                UserScreen(navController = navController)
-            }
             composable("weight_screen") {
                 WeightScreen(
                     navController = navController,
                     repository = repository,
-                    currentUserId = currentUserId
+                    currentUserId = userId
                 )
             }
             composable("exercise_screen") {
