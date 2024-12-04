@@ -11,7 +11,7 @@ import com.example.lightweight.data.AppDatabase
 import com.example.lightweight.data.UserRepository
 
 @Composable
-fun DrawerContent(navController: NavController, onClose: () -> Unit) {
+fun DrawerContent(navController: NavController, userId: Int, onClose: () -> Unit) {
     val db = AppDatabase.getDatabase(LocalContext.current)
     val userDao = db.userDao()
     val weightLogDao = db.weightLogDao()
@@ -43,8 +43,8 @@ fun DrawerContent(navController: NavController, onClose: () -> Unit) {
             modifier = Modifier
                 .fillMaxWidth()
                 .clickable {
-                    navController.navigate("user_screen/{userId}") {
-                        popUpTo("user_screen") { inclusive = true }
+                    navController.navigate("user_screen/${userId}") {
+                        popUpTo("user_screen/${userId}") { inclusive = true }
                     }
                     onClose()
                 }

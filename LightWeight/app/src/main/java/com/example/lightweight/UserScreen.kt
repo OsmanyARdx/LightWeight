@@ -90,6 +90,7 @@ fun UserScreen(navController: NavHostController,userID:Int) {
             ) {
                 DrawerContent(
                     navController = navController,
+                    userId = userID,
                     onClose = { scope.launch { drawerState.close() }}
                 )
             }

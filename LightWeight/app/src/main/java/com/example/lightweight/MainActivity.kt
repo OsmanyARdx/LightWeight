@@ -123,10 +123,10 @@ fun LightWeightApp( navController: NavHostController,
                 )
             }
             composable("exercise_screen") {
-                ExerciseScreen(navController = navController)
+                ExerciseScreen(navController = navController, userId)
             }
             composable("nutrition_screen") {
-                NutritionScreen(navController = navController)
+                NutritionScreen(navController = navController, userId)
             }
         }
     }

@@ -108,6 +108,7 @@ class NutritionViewModel : ViewModel() {
 @Composable
 fun NutritionScreen(
     navController: NavController,
+    userID:Int,
     viewModel: NutritionViewModel = NutritionViewModel()
 ) {
     var food1 by remember { mutableStateOf(TextFieldValue("")) }
@@ -133,6 +134,7 @@ fun NutritionScreen(
             ) {
                 DrawerContent(
                     navController = navController,
+                    userId = userID,
                     onClose = { scope.launch { drawerState.close() } }
                 )
             }
@@ -318,13 +320,3 @@ fun QuantityDropdownSelector(
     }
 }
 
-
-
-@Preview(showBackground = true)
-@Composable
-fun NutritionScreenPreview() {
-    LightWeightTheme {
-        val navController = rememberNavController()
-        NutritionScreen(navController)
-    }
-}

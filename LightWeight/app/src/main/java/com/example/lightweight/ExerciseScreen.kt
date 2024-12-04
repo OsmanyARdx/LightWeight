@@ -186,7 +186,7 @@ suspend fun getAllExercises(token: String, api: WgerApiService): List<WgerExerci
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ExerciseScreen(navController: NavController) {
+fun ExerciseScreen(navController: NavController, userID:Int) {
     var muscleGroups by remember { mutableStateOf<List<MuscleGroup>>(emptyList()) }
     var allExercises by remember { mutableStateOf<List<WgerExercise>>(emptyList()) }
     var allImages by remember { mutableStateOf<List<ExerciseImage>>(emptyList()) }
@@ -258,6 +258,7 @@ fun ExerciseScreen(navController: NavController) {
             ) {
                 DrawerContent(
                     navController = navController,
+                    userId = userID,
                     onClose = { scope.launch { drawerState.close() } }
                 )
             }
@@ -453,11 +454,3 @@ fun extractExerciseName(imageUrl: String): String {
         .joinToString(" ") { it.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.ROOT) else it.toString() } }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun MuscleGroupScreenPreview() {
-    LightWeightTheme {
-        val navController = rememberNavController()
-        ExerciseScreen(navController)
-    }
-}

@@ -26,6 +26,7 @@ import com.example.lightweight.data.UserRepository
 import com.example.lightweight.data.WeightLog
 import com.example.lightweight.ui.theme.limeGreen
 import kotlinx.coroutines.launch
+import okhttp3.internal.userAgent
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -69,6 +70,7 @@ fun WeightScreen(navController: NavHostController, repository: UserRepository, c
             ) {
                 DrawerContent(
                     navController = navController,
+                    userId = currentUserId,
                     onClose = { scope.launch { drawerState.close() } }
                 )
             }
