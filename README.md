@@ -10,3 +10,5 @@ Home Page: Navigate towards the nutrition page, exercise page, or weight page wh
 Weight Tracker Page: Input your weight and date in orer for your weight to be tracked on the Home Page  <br />
 Exercise Page: Select a muscle group to view a list of excercises that utilize that muscle group  <br />
 Nutrition Page: Input the food you've eaten for nutritional information such as calories to appear  <br />
+
+# Screens
