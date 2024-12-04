@@ -72,6 +72,17 @@ class UserRepository(private val userDao: UserDao,
             Result.failure(e)
         }
     }
+
+    suspend fun getUserByUsername(username: String): User? {
+        return try {
+            userDao.getUserByUsername(username)
+        } catch (e: Exception) {
+            // Handle any errors, such as database connection issues
+            e.printStackTrace()
+            null
+        }
+    }
+
     /**
      * Utility function to hash a password.
      */

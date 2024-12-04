@@ -33,11 +33,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.example.lightweight.data.AppDatabase
+import com.example.lightweight.data.UserRepository
 import com.example.lightweight.ui.theme.softGreen
 import kotlinx.coroutines.launch
 
@@ -48,7 +51,13 @@ fun UserScreen(navController: NavHostController) {
 
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
-
+    val db = AppDatabase.getDatabase(LocalContext.current)
+    val userDao = db.userDao()
+    val weightLogDao = db.weightLogDao()
+    val userRepository = UserRepository(
+        userDao,
+        weightLogDao
+    )
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {

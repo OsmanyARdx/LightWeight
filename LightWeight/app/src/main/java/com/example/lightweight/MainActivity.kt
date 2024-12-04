@@ -51,13 +51,17 @@ import com.example.lightweight.data.UserRepository
 import com.example.lightweight.ui.theme.LightWeightTheme
 import com.example.lightweight.ui.theme.cyanGreen
 import com.example.lightweight.ui.theme.limeGreen
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
+            val username = ""
             val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
             val navController = rememberNavController()
             val scope = rememberCoroutineScope()
@@ -68,10 +72,9 @@ class MainActivity : ComponentActivity() {
                 userDao,
                 weightLogDao
             )
+            var currentUserId: Int? = null
 
-            // Placeholder for current user ID; replace with dynamic logic
-            val currentUserId = 1
-                LightWeightApp(navController, drawerState,userRepository,currentUserId)
+            LightWeightApp(navController, drawerState,userRepository,currentUserId)
         }
     }
 }
@@ -79,8 +82,7 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun LightWeightApp( navController: NavHostController,
                     drawerState: DrawerState,
-                    repository: UserRepository,
-                    currentUserId: Int) {
+                    repository: UserRepository,currentUserId: Int) {
     LightWeightTheme {
         NavHost(navController = navController, startDestination = "splash") {
             composable("splash") {
@@ -94,7 +96,7 @@ fun LightWeightApp( navController: NavHostController,
                 LoginRegisterScreen(navController = navController)
             }
             composable("login") {
-                LoginScreen(navController = navController)
+                LoginScreen(navController = navController, currentUserId)
             }
             composable("register") {
                 RegisterScreen(
