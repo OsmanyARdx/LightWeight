@@ -1,3 +1,4 @@
+import android.graphics.Bitmap
 import android.graphics.Color
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -34,6 +35,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import com.example.lightweight.hashPassword // Import Utils.kt to hash the password
 import kotlinx.coroutines.withContext
+import java.io.ByteArrayOutputStream
 
 @Composable
 fun RegisterScreen(onRegistrationSuccess: () -> Unit, onBack: () -> Unit) {
@@ -340,6 +342,7 @@ fun RegisterScreen(onRegistrationSuccess: () -> Unit, onBack: () -> Unit) {
         }
     }
 }
+
 @Preview(showBackground = true)
 @Composable
 fun PreviewRegisterScreen() {

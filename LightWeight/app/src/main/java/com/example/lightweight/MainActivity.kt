@@ -188,6 +188,7 @@ fun SplashScreen(onSplashScreenTimeout: () -> Unit) {
 
 @Composable
 fun LoginRegisterScreen(navController: NavController) {
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -211,6 +212,15 @@ fun LoginRegisterScreen(navController: NavController) {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
+        Image(
+            painter = painterResource(id = R.drawable.light_weight_logo),
+            contentDescription = "Profile Image",
+            modifier = Modifier
+                .size(300.dp)
+                .padding(0.dp)
+        )
+
+        Spacer(modifier = Modifier.width(16.dp))
         Text(
             text = "LIGHTWEIGHT",
             color = MaterialTheme.colorScheme.onSurface,

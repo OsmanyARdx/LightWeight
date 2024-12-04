@@ -72,7 +72,7 @@ fun WeightScreen(navController: NavHostController, repository: UserRepository, c
                 modifier = Modifier
                     .fillMaxHeight()
                     .width(240.dp)
-                    .background(Color(0xFFB2DFDB))
+                    .background(softGreen)
             ) {
                 DrawerContent(
                     navController = navController,
@@ -107,7 +107,7 @@ fun WeightScreen(navController: NavHostController, repository: UserRepository, c
                     navigationIcon = {
                         IconButton(onClick = { scope.launch { drawerState.open() } }) {
                             Image(
-                                painter = painterResource(id = R.drawable.user),
+                                painter = painterResource(id = R.drawable.menubutton),
                                 contentDescription = "App Logo",
                                 modifier = Modifier
                                     .size(40.dp)

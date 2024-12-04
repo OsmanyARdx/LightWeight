@@ -26,18 +26,7 @@ fun DrawerContent(navController: NavController, userId: Int, onClose: () -> Unit
             .padding(16.dp),
         verticalArrangement = Arrangement.Top
     ) {
-        Text(
-            text = "Log Out",
-            modifier = Modifier
-                .fillMaxWidth()
-                .clickable {
-                    navController.navigate("login") {
-                        popUpTo("login") { inclusive = true }
-                    }
-                    onClose()
-                }
-                .padding(vertical = 12.dp)
-        )
+
         Text(
             text = "Home",
             modifier = Modifier
@@ -84,6 +73,18 @@ fun DrawerContent(navController: NavController, userId: Int, onClose: () -> Unit
                 .clickable {
                     navController.navigate("nutrition_screen") {
                         popUpTo("nutrition_screen") { inclusive = true }
+                    }
+                    onClose()
+                }
+                .padding(vertical = 12.dp)
+        )
+        Text(
+            text = "Log Out",
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable {
+                    navController.navigate("login") {
+                        popUpTo("login") { inclusive = true }
                     }
                     onClose()
                 }
