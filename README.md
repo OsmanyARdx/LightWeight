@@ -35,6 +35,9 @@ Register screen <br />
 Login screen <br />
 ![](LightWeight/Screenshot_8.png)<br />
 
+# Transition Diagram
+![](LightWeight/transition_diagram.png) <br/>
+
 # Credits
 Osmany: Project Manager, Software Engineer, UI Designer <br />
 Salar: Software Engineer, UI Designer <br />
