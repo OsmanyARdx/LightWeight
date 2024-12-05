@@ -18,12 +18,12 @@ LightWeight offers a financially responsible solution for college students looki
 Other apps require a subscription for ad-free fitness <br />
 
 # Screens
-![](LightWeight/Screenshot_1.png)
-![](LightWeight/Screenshot_2.png)
-![](LightWeight/Screenshot_3.png)
-![](LightWeight/Screenshot_4.png)
-![](LightWeight/Screenshot_5.png)
-![](LightWeight/Screenshot_6.png)
+![Main screen with weight graph](LightWeight/Screenshot_1.png) 
+![Weight tracking and updating screen](LightWeight/Screenshot_2.png)
+![Sidebar (prevalent throughout app)](LightWeight/Screenshot_3.png)
+![Muscle groups on exercise screen](LightWeight/Screenshot_4.png)
+![Exercises on exercise screen](LightWeight/Screenshot_5.png)
+![Nutrition screen](LightWeight/Screenshot_6.png)
 
 # Credits
 Osmany: Project Manager, Software Engineer, UI Designer <br />
