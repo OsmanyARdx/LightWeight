@@ -217,8 +217,9 @@ fun WeightScreen(navController: NavHostController, repository: UserRepository, c
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(450.dp) // Height
-                        .border(2.dp, Color.Gray, RoundedCornerShape(8.dp))
+                        .border(2.dp, MaterialTheme.colorScheme.onSurface, RoundedCornerShape(8.dp))
                         .padding(12.dp)
+
                 ) {
                     items(weightLogs) { log ->
                         Row(
@@ -226,11 +227,13 @@ fun WeightScreen(navController: NavHostController, repository: UserRepository, c
                                 .fillMaxWidth()
                                 .padding(8.dp),
                             verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceBetween
+                            horizontalArrangement = Arrangement.SpaceBetween,
+
                         ) {
                             Text(
                                 text = "${log.weight} lbs - ${log.date}",
-                                fontSize = 16.sp
+                                fontSize = 16.sp,
+                                color = MaterialTheme.colorScheme.onSurface
                             )
                             IconButton(onClick = {
                                 scope.launch {
@@ -246,7 +249,8 @@ fun WeightScreen(navController: NavHostController, repository: UserRepository, c
                             }) {
                                 Icon(
                                     imageVector = Icons.Default.Delete,
-                                    contentDescription = "Delete"
+                                    contentDescription = "Delete",
+                                    tint = MaterialTheme.colorScheme.onSurface
                                 )
                             }
                         }

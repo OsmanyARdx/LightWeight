@@ -225,7 +225,8 @@ fun UserScreen(navController: NavHostController,userID:Int) {
                                 text = "Weight Progress",
                                 fontSize = 16.sp,
                                 fontWeight = FontWeight.Bold,
-                                modifier = Modifier.padding(bottom = 15.dp)
+                                modifier = Modifier.padding(bottom = 15.dp),
+                                color = MaterialTheme.colorScheme.onSurface
                             )
 
                             // Graph Box
