@@ -29,7 +29,9 @@ Muscle groups on exercise screen<br />
 Exercises on exercise screen<br />
 ![Exercises on exercise screen](LightWeight/Screenshot_5.png)<br />
 Nutrition screen<br />
-![Nutrition screen](LightWeight/Screenshot_6.png)<br />
+![](LightWeight/Screenshot_6.png)<br />
+![](LightWeight/Screenshot_7.png)<br />
+![](LightWeight/Screenshot_8.png)<br />
 
 # Credits
 Osmany: Project Manager, Software Engineer, UI Designer <br />
