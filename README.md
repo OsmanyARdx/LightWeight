@@ -61,8 +61,8 @@ The ability to create personalized meal plans for health goals<br/>
 Add wearable functionality<br/>
 
 # Credits
-Osmany: Project Manager, Software Engineer, UI Designer <br />
-Salar: Software Engineer, UI Designer <br />
-Meraj: Software Engineer, UI Designer <br />
-Francis: Database Engineer, Software Engineer, UI Designer <br />
-Bryant: Software Engineer, UI Designer <br />
+Osmany: Project Manager, Software Engineer, UI Designer. Handled API research and implementation while leading every screen. <br />
+Salar: Software Engineer, UI Designer. Designed the Muscle Group and Exercise Screens. <br />
+Meraj: Software Engineer, UI Designer. Designed the Registration Screen while adding details to the Nutrition Screen. <br />
+Francis: Database Engineer, Software Engineer, UI Designer. Handled all database uploads such as profile picture, registration information, and main screen weight graph. <br />
+Bryant: Software Engineer, UI Designer. Designed the Nutrition Screen and the Login Screen. <br />
