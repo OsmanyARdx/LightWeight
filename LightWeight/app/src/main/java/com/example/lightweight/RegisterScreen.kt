@@ -34,7 +34,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
-import com.example.lightweight.hashPassword // Import Utils.kt to hash the password
+import com.example.lightweight.hashPassword
 import kotlinx.coroutines.withContext
 import java.io.ByteArrayOutputStream
 
@@ -117,20 +117,20 @@ fun RegisterScreen(onRegistrationSuccess: () -> Unit, onBack: () -> Unit) {
             try {
                 userRepository.registerUser(newUser).fold(
                     onSuccess = {
-                        // Ensure this runs on the main thread
+
                         withContext(Dispatchers.Main) {
                             onRegistrationSuccess()
                         }
                     },
                     onFailure = { error ->
-                        // Ensure this runs on the main thread
+
                         withContext(Dispatchers.Main) {
                             registrationError = "Registration failed: ${error.message}"
                         }
                     }
                 )
             } catch (e: Exception) {
-                // Ensure this runs on the main thread
+
                 withContext(Dispatchers.Main) {
                     registrationError = "Unexpected error: ${e.message}"
                 }

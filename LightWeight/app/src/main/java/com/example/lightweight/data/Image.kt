@@ -16,6 +16,6 @@ import androidx.room.PrimaryKey
 )
 data class Image(
 @PrimaryKey(autoGenerate = true) val id: Int = 0,
-val userId: Int, // This references the ID of the User.
+val userId: Int,
 val profilePicture: String
 )

@@ -1,7 +1,13 @@
+import android.widget.Space
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import retrofit2.Call
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -9,8 +15,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Color.Companion.Red
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
@@ -70,8 +80,31 @@ object RetrofitInstance {
 }
 
 class NutritionViewModel : ViewModel() {
-    private val _responseText = mutableStateOf("Response will appear here")
-    val responseText: State<String> = _responseText
+
+    private val funnyMessages = listOf(
+        "An apple a day keeps anyone away if you throw it hard enough!",
+        "I’m on a seafood diet. I see food, and I eat it!",
+        "Life is uncertain. Eat dessert first!",
+        "You can’t live a full life on an empty stomach.",
+        "I’m sorry for what I said when I was hungry...",
+        "Chocolate comes from cocoa, which is a tree. That makes it a plant. Therefore, chocolate is a salad.",
+        "Dieting is the penalty for exceeding the feed limit.",
+        "I followed my heart, and it led me to the fridge...",
+        "Nine out of ten people love chocolate. The tenth person always lies.",
+        "Please tell me that's you last Kitkat...",
+        "My favorite exercise is a cross between a lunge and a crunch... I call it lunch."
+    )
+
+    private val _responseText = mutableStateOf(
+        AnnotatedString(
+            text = funnyMessages.random(),
+            spanStyle = SpanStyle(fontStyle = FontStyle.Italic)
+        )
+    )
+    val responseText: State<AnnotatedString> = _responseText
+
+    private val _caloriesProgress = mutableStateOf(0f)
+    val caloriesProgress: State<Float> = _caloriesProgress
 
     fun fetchNutritionDetails(foods: List<String>) {
         val request = NutritionRequest(
@@ -84,25 +117,34 @@ class NutritionViewModel : ViewModel() {
                 val response = RetrofitInstance.api.getNutritionDetails(request).awaitResponse()
                 if (response.isSuccessful) {
                     response.body()?.let { data ->
-                        _responseText.value = """
-                            URI: ${data.uri}
-                            Yield: ${data.yield}
-                            Calories: ${data.calories}
-                            Total CO2 Emissions: ${data.totalCO2Emissions}
-                            CO2 Emissions Class: ${data.co2EmissionsClass}
-                            Total Weight: ${data.totalWeight}
-                            Diet Labels: ${data.dietLabels.joinToString()}
-                        """.trimIndent()
+                        _responseText.value = AnnotatedString(
+                            text = """
+                                Calories: ${data.calories}
+                                Yield: ${data.yield}
+                                Total CO2 Emissions: ${data.totalCO2Emissions}
+                                CO2 Emissions Class: ${data.co2EmissionsClass}
+                                Total Weight: ${data.totalWeight}
+                                Diet Labels: ${data.dietLabels.joinToString(", ")}
+                            """.trimIndent()
+                        )
+
+
+                        _caloriesProgress.value = (data.calories / 2000f).coerceIn(0f, 1f)
                     }
                 } else {
-                    _responseText.value = "Error: ${response.errorBody()?.string()}"
+                    _responseText.value = AnnotatedString(
+                        text = "Error: ${response.errorBody()?.string() ?: "Unknown error"}"
+                    )
                 }
             } catch (e: Exception) {
-                _responseText.value = "Exception: ${e.message}"
+                _responseText.value = AnnotatedString(
+                    text = "Exception: ${e.message}"
+                )
             }
         }
     }
 }
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -119,7 +161,7 @@ fun NutritionScreen(
     var qty3 by remember { mutableStateOf("") }
 
     val responseText by viewModel.responseText
-    val quantities = listOf("1", "2", "3", "1 cup", "2 cups", "3 cups")
+    val quantities = listOf("1", "2", "3","4","5", "1 cup", "2 cups", "3 cups", "4 cups", "5 cups")
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
 
@@ -232,7 +274,7 @@ fun NutritionScreen(
 
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.padding(top = 16.dp)
+                        modifier = Modifier.padding(top = 0.dp)
                     ) {
                         QuantityDropdownSelector(
                             selectedQty = qty3,
@@ -263,15 +305,77 @@ fun NutritionScreen(
                         Text("GET FOOD INFO")
                     }
 
-                    Text(
-                        text = responseText,
-                        fontSize = 16.sp,
+                    Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(16.dp)
-                            .height(300.dp)
+                            .height(250.dp)
+                            .border(2.dp, MaterialTheme.colorScheme.onSurface, RoundedCornerShape(8.dp))
+                            .padding(12.dp)
+
+                    ) {
+                        Text(
+                            text = responseText,
+                            fontSize = 16.sp,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp)
+                                .height(300.dp),
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                    }
+
+                        val caloriesProgress by viewModel.caloriesProgress
+
+                        val animatedProgress = animateFloatAsState(
+                            targetValue = caloriesProgress,
+                            animationSpec = tween(
+                                durationMillis = 1000,
+                                easing = FastOutSlowInEasing
+                            )
+                        )
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    Text(
+                        text = "2000 Calories/Day",
+                        color = MaterialTheme.colorScheme.onSurface
                     )
+
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier
+                            .size(120.dp)
+                            .padding(16.dp)
+                    ) {
+                                        // calculates the progress %
+                        val progressPercentage = animatedProgress.value * 100
+
+
+                        val progressColor = when {
+                            progressPercentage <= 75f -> Color.Green    // color based on the progress %
+                            progressPercentage <= 90f -> Color.Yellow
+                            else -> Red
+                        }
+
+                        CircularProgressIndicator(
+                            progress = animatedProgress.value,
+                            strokeWidth = 8.dp,
+                            color = progressColor,
+                            modifier = Modifier.fillMaxSize()
+                        )
+
+                        Text(
+                            text = "${progressPercentage.toInt()}%",
+                            style = TextStyle(
+                                fontSize = 30.sp,
+                                fontWeight = FontWeight.Bold,
+                                textAlign = TextAlign.Center
+                            ),
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                    }
                 }
+
             }
         }
     }
