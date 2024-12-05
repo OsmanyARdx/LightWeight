@@ -74,7 +74,7 @@ class MainActivity : ComponentActivity() {
                 imageDao
             )
 
-            LightWeightApp(navController, drawerState,userRepository)
+            LightWeightApp(navController, drawerState, userRepository)
         }
     }
 }

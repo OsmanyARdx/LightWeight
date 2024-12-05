@@ -182,201 +182,227 @@ fun NutritionScreen(
             }
         }
     ) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(MaterialTheme.colorScheme.primary, RoundedCornerShape(16.dp))
-        ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(MaterialTheme.colorScheme.surface),
-                horizontalAlignment = Alignment.Start,
-                verticalArrangement = Arrangement.Top
-            ) {
+
                 Box(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 8.dp, vertical = 8.dp)
-                        .clip(RoundedCornerShape(24.dp))
-                        .background(softGreen, RoundedCornerShape(24.dp))
-                ) {
-                    TopAppBar(
-                        title = {
-                            Text(
-                                text = "Nutrition Information",
-                                fontSize = 20.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = Color.White
-                            )
-                        },
-                        navigationIcon = {
-                            IconButton(onClick = { scope.launch { drawerState.open() } }) {
-                                Image(
-                                    painter = painterResource(id = R.drawable.menubutton),
-                                    contentDescription = "App Logo",
-                                    modifier = Modifier
-                                        .size(40.dp)
-                                        .padding(4.dp)
-                                )
-                            }
-                        },
-                        colors = TopAppBarDefaults.topAppBarColors(
-                            containerColor = softGreen,
-                            titleContentColor = Color.White
-                        ),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clip(RoundedCornerShape(bottomStart = 16.dp, bottomEnd = 16.dp))
-                    )
-                }
-                Column(
-                    modifier = Modifier
                         .fillMaxSize()
-                        .padding(16.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
+                        .background(MaterialTheme.colorScheme.primary, RoundedCornerShape(16.dp))
                 ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.padding(top = 8.dp)
-                    ) {
-                        QuantityDropdownSelector(
-                            selectedQty = qty1,
-                            onQuantitySelected = { qty1 = it },
-                            quantities = quantities
-                        )
-                        OutlinedTextField(
-                            value = food1,
-                            onValueChange = { food1 = it },
-                            label = { Text("Enter Food 1: ") },
-                            modifier = Modifier.fillMaxWidth(),
-                            textStyle = TextStyle(textAlign = TextAlign.Center)
-                        )
-                    }
-
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.padding(top = 0.dp)
-                    ) {
-                        QuantityDropdownSelector(
-                            selectedQty = qty2,
-                            onQuantitySelected = { qty2 = it },
-                            quantities = quantities
-                        )
-                        OutlinedTextField(
-                            value = food2,
-                            onValueChange = { food2 = it },
-                            label = { Text("Enter Food 2: ") },
-                            modifier = Modifier.fillMaxWidth(),
-                            textStyle = TextStyle(textAlign = TextAlign.Center)
-                        )
-                    }
-
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.padding(top = 0.dp)
-                    ) {
-                        QuantityDropdownSelector(
-                            selectedQty = qty3,
-                            onQuantitySelected = { qty3 = it },
-                            quantities = quantities
-                        )
-                        OutlinedTextField(
-                            value = food3,
-                            onValueChange = { food3 = it },
-                            label = { Text("Enter Food 3: ") },
-                            modifier = Modifier.fillMaxWidth(),
-                            textStyle = TextStyle(textAlign = TextAlign.Center)
-                        )
-                    }
-
-                    Button(
-                        onClick = {
-                            val foods = listOf(
-                                "$qty1 ${food1.text}",
-                                "$qty2 ${food2.text}",
-                                "$qty3 ${food3.text}"
-                            ).filter { it.isNotBlank() }
-                            viewModel.fetchNutritionDetails(foods)
-                        },
-                        modifier = Modifier.padding(vertical = 30.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = limeGreen)
-                    ) {
-                        Text("GET FOOD INFO")
-                    }
-
                     Column(
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .height(250.dp)
-                            .border(2.dp, MaterialTheme.colorScheme.onSurface, RoundedCornerShape(8.dp))
-                            .padding(12.dp)
-
+                            .fillMaxSize()
+                            .background(MaterialTheme.colorScheme.surface),
+                        horizontalAlignment = Alignment.Start,
+                        verticalArrangement = Arrangement.Top
                     ) {
-                        Text(
-                            text = responseText,
-                            fontSize = 16.sp,
+                        Box(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(16.dp)
-                                .height(300.dp),
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
-                    }
-
-                        val caloriesProgress by viewModel.caloriesProgress
-
-                        val animatedProgress = animateFloatAsState(
-                            targetValue = caloriesProgress,
-                            animationSpec = tween(
-                                durationMillis = 1000,
-                                easing = FastOutSlowInEasing
+                                .padding(horizontal = 8.dp, vertical = 8.dp)
+                                .clip(RoundedCornerShape(24.dp))
+                                .background(softGreen, RoundedCornerShape(24.dp))
+                        ) {
+                            TopAppBar(
+                                title = {
+                                    Text(
+                                        text = "Nutrition Information",
+                                        fontSize = 20.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        color = Color.White
+                                    )
+                                },
+                                navigationIcon = {
+                                    IconButton(onClick = { scope.launch { drawerState.open() } }) {
+                                        Image(
+                                            painter = painterResource(id = R.drawable.menubutton),
+                                            contentDescription = "App Logo",
+                                            modifier = Modifier
+                                                .size(40.dp)
+                                                .padding(4.dp)
+                                        )
+                                    }
+                                },
+                                colors = TopAppBarDefaults.topAppBarColors(
+                                    containerColor = softGreen,
+                                    titleContentColor = Color.White
+                                ),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clip(
+                                        RoundedCornerShape(
+                                            bottomStart = 16.dp,
+                                            bottomEnd = 16.dp
+                                        )
+                                    )
                             )
-                        )
-
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    Text(
-                        text = "2000 Calories/Day",
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
-
-                    Box(
-                        contentAlignment = Alignment.Center,
-                        modifier = Modifier
-                            .size(120.dp)
-                            .padding(16.dp)
-                    ) {
-                                        // calculates the progress %
-                        val progressPercentage = animatedProgress.value * 100
-
-
-                        val progressColor = when {
-                            progressPercentage <= 75f -> Color.Green    // color based on the progress %
-                            progressPercentage <= 90f -> Color.Yellow
-                            else -> Red
                         }
 
-                        CircularProgressIndicator(
-                            progress = animatedProgress.value,
-                            strokeWidth = 8.dp,
-                            color = progressColor,
-                            modifier = Modifier.fillMaxSize()
-                        )
+                        LazyColumn(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .background(MaterialTheme.colorScheme.surface),
+                            horizontalAlignment = Alignment.Start,
+                            verticalArrangement = Arrangement.Top
+                        ) {
+                            item { Spacer(modifier = Modifier.height(16.dp)) }
 
-                        Text(
-                            text = "${progressPercentage.toInt()}%",
-                            style = TextStyle(
-                                fontSize = 30.sp,
-                                fontWeight = FontWeight.Bold,
-                                textAlign = TextAlign.Center
-                            ),
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
+                            item {
+                                Column(
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .padding(16.dp),
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                ) {
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        modifier = Modifier.padding(top = 8.dp)
+                                    ) {
+                                        QuantityDropdownSelector(
+                                            selectedQty = qty1,
+                                            onQuantitySelected = { qty1 = it },
+                                            quantities = quantities
+                                        )
+                                        OutlinedTextField(
+                                            value = food1,
+                                            onValueChange = { food1 = it },
+                                            label = { Text("Enter Food 1: ") },
+                                            modifier = Modifier.fillMaxWidth(),
+                                            textStyle = TextStyle(textAlign = TextAlign.Center)
+                                        )
+                                    }
+
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        modifier = Modifier.padding(top = 0.dp)
+                                    ) {
+                                        QuantityDropdownSelector(
+                                            selectedQty = qty2,
+                                            onQuantitySelected = { qty2 = it },
+                                            quantities = quantities
+                                        )
+                                        OutlinedTextField(
+                                            value = food2,
+                                            onValueChange = { food2 = it },
+                                            label = { Text("Enter Food 2: ") },
+                                            modifier = Modifier.fillMaxWidth(),
+                                            textStyle = TextStyle(textAlign = TextAlign.Center)
+                                        )
+                                    }
+
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        modifier = Modifier.padding(top = 0.dp)
+                                    ) {
+                                        QuantityDropdownSelector(
+                                            selectedQty = qty3,
+                                            onQuantitySelected = { qty3 = it },
+                                            quantities = quantities
+                                        )
+                                        OutlinedTextField(
+                                            value = food3,
+                                            onValueChange = { food3 = it },
+                                            label = { Text("Enter Food 3: ") },
+                                            modifier = Modifier.fillMaxWidth(),
+                                            textStyle = TextStyle(textAlign = TextAlign.Center)
+                                        )
+                                    }
+
+                                    Button(
+                                        onClick = {
+                                            val foods = listOf(
+                                                "$qty1 ${food1.text}",
+                                                "$qty2 ${food2.text}",
+                                                "$qty3 ${food3.text}"
+                                            ).filter { it.isNotBlank() }
+                                            viewModel.fetchNutritionDetails(foods)
+                                        },
+                                        modifier = Modifier.padding(vertical = 30.dp),
+                                        colors = ButtonDefaults.buttonColors(containerColor = limeGreen)
+                                    ) {
+                                        Text("GET FOOD INFO")
+                                    }
+
+                                    Column(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .height(250.dp)
+                                            .border(
+                                                2.dp,
+                                                MaterialTheme.colorScheme.onSurface,
+                                                RoundedCornerShape(8.dp)
+                                            )
+                                            .padding(12.dp)
+
+                                    ) {
+                                        Text(
+                                            text = responseText,
+                                            fontSize = 16.sp,
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .padding(16.dp)
+                                                .height(300.dp),
+                                            color = MaterialTheme.colorScheme.onSurface
+                                        )
+                                    }
+
+                                    val caloriesProgress by viewModel.caloriesProgress
+
+                                    val animatedProgress = animateFloatAsState(
+                                        targetValue = caloriesProgress,
+                                        animationSpec = tween(
+                                            durationMillis = 1000,
+                                            easing = FastOutSlowInEasing
+                                        )
+                                    )
+
+                                    Spacer(modifier = Modifier.height(16.dp))
+
+                                    Text(
+                                        text = "2000 Calories/Day",
+                                        color = MaterialTheme.colorScheme.onSurface
+                                    )
+
+                                    Box(
+                                        contentAlignment = Alignment.Center,
+                                        modifier = Modifier
+                                            .size(120.dp)
+                                            .padding(16.dp)
+                                    ) {
+                                        // calculates the progress %
+                                        val progressPercentage = animatedProgress.value * 100
+
+
+                                        val progressColor = when {
+                                            progressPercentage <= 75f -> Color.Green    // color based on the progress %
+                                            progressPercentage <= 90f -> Color.Yellow
+                                            else -> Red
+                                        }
+
+                                        CircularProgressIndicator(
+                                            progress = animatedProgress.value,
+                                            strokeWidth = 8.dp,
+                                            color = progressColor,
+                                            modifier = Modifier.fillMaxSize()
+                                        )
+
+                                        Text(
+                                            text = "${progressPercentage.toInt()}%",
+                                            style = TextStyle(
+                                                fontSize = 30.sp,
+                                                fontWeight = FontWeight.Bold,
+                                                textAlign = TextAlign.Center
+                                            ),
+                                            color = MaterialTheme.colorScheme.onSurface
+                                        )
+                                    }
+
+                                }
+                            }
+                        }
+
+
                     }
-                }
 
-            }
         }
     }
 }
