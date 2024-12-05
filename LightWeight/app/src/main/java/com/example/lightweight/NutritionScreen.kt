@@ -1,7 +1,13 @@
+import android.widget.Space
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import retrofit2.Call
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -73,6 +79,9 @@ class NutritionViewModel : ViewModel() {
     private val _responseText = mutableStateOf("Response will appear here")
     val responseText: State<String> = _responseText
 
+    private val _caloriesProgress = mutableStateOf(0f) // Progress as a percentage (0f to 1f)
+    val caloriesProgress: State<Float> = _caloriesProgress
+
     fun fetchNutritionDetails(foods: List<String>) {
         val request = NutritionRequest(
             title = "Test",
@@ -85,17 +94,19 @@ class NutritionViewModel : ViewModel() {
                 if (response.isSuccessful) {
                     response.body()?.let { data ->
                         _responseText.value = """
-                            URI: ${data.uri}
-                            Yield: ${data.yield}
                             Calories: ${data.calories}
+                            Yield: ${data.yield}
                             Total CO2 Emissions: ${data.totalCO2Emissions}
                             CO2 Emissions Class: ${data.co2EmissionsClass}
                             Total Weight: ${data.totalWeight}
-                            Diet Labels: ${data.dietLabels.joinToString()}
+                            Diet Labels: ${data.dietLabels.joinToString(", ")}
                         """.trimIndent()
+
+                        // Calculate progress for calories
+                        _caloriesProgress.value = (data.calories / 2000f).coerceIn(0f, 1f)
                     }
                 } else {
-                    _responseText.value = "Error: ${response.errorBody()?.string()}"
+                    _responseText.value = "Error: ${response.errorBody()?.string() ?: "Unknown error"}"
                 }
             } catch (e: Exception) {
                 _responseText.value = "Exception: ${e.message}"
@@ -103,6 +114,7 @@ class NutritionViewModel : ViewModel() {
         }
     }
 }
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -263,15 +275,69 @@ fun NutritionScreen(
                         Text("GET FOOD INFO")
                     }
 
-                    Text(
-                        text = responseText,
-                        fontSize = 16.sp,
+                    Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(16.dp)
-                            .height(300.dp)
-                    )
+                            .height(250.dp) // Height
+                            .border(2.dp, MaterialTheme.colorScheme.onSurface, RoundedCornerShape(8.dp))
+                            .padding(12.dp)
+
+                    ) {
+                        Text(
+                            text = responseText,
+                            fontSize = 16.sp,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp)
+                                .height(300.dp),
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                    }
+
+                        val caloriesProgress by viewModel.caloriesProgress
+
+                        val animatedProgress = animateFloatAsState(
+                            targetValue = caloriesProgress,
+                            animationSpec = tween(
+                                durationMillis = 1000,
+                                easing = FastOutSlowInEasing
+                            )
+                        )
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                        Text(
+                            text = "2000 Calories/Day",
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+
+
+                        Box(
+                            contentAlignment = Alignment.Center,
+                            modifier = Modifier
+                                .size(120.dp)
+                                .padding(16.dp)
+                        ) {
+
+                            CircularProgressIndicator(
+                                progress = animatedProgress.value,
+                                strokeWidth = 8.dp,
+                                color = limeGreen,
+                                modifier = Modifier.fillMaxSize()
+                            )
+
+                            Text(
+                                text = "${(animatedProgress.value * 100).toInt()}%",
+                                style = TextStyle(
+                                    fontSize = 30.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    textAlign = TextAlign.Center
+                                ),
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                        }
                 }
+
             }
         }
     }
