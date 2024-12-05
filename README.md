@@ -2,7 +2,8 @@
 LightWeight, a one-stop app for nutrition education and exercise expertise.
 
 # Overview
-LightWeight is a new fitness mobile application, developed by college students, for college students, to help them optimize their bodies and minds through fitness, exercise routines, nutrition recommendations, and weight tracking in an easy-to-use platform. We understand college students have limited time, and tight budgets so we bring this knowledge and tools to empower them in their academic life. A one-stop app for nutrition education and exercise expertise.
+Problem: College students often struggle to maintain a healthy lifestyle due to limited time, tight budgets, and a lack of accessible fitness and nutrition resources. This leads to challenges in balancing academic performance with physical and mental well-being. <br />
+Enter LightWeight, a new fitness mobile application, developed by college students, for college students, to help them optimize their bodies and minds through fitness, exercise routines, nutrition recommendations, and weight tracking in an easy-to-use platform. We understand college students have limited time, and tight budgets so we bring this knowledge and tools to empower them in their academic life. A one-stop app for nutrition education and exercise expertise.
 
 # Features
 Login/Sign-Up Page: Create a new account or log in to access your personalized exercise and nutrition details. <br />
@@ -18,3 +19,10 @@ Nutrition Page: Input the food you've eaten for nutritional information such as 
 ![](LightWeight/Screenshot_4.png)
 ![](LightWeight/Screenshot_5.png)
 ![](LightWeight/Screenshot_6.png)
+
+# Credits
+Osmany: Project Manager, Software Engineer, UI Designer <br />
+Salar: Software Engineer, UI Designer <br />
+Meraj: Software Engineer, UI Designer <br />
+Francis: Database Engineer, Software Engineer, UI Designer <br />
+Bryant: Software Engineer, UI Designer <br />
