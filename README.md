@@ -30,7 +30,9 @@ Exercises on exercise screen<br />
 ![Exercises on exercise screen](LightWeight/Screenshot_5.png)<br />
 Nutrition screen<br />
 ![](LightWeight/Screenshot_6.png)<br />
+Register screen <br />
 ![](LightWeight/Screenshot_7.png)<br />
+Login screen <br />
 ![](LightWeight/Screenshot_8.png)<br />
 
 # Credits
