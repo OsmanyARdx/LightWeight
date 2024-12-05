@@ -15,7 +15,7 @@ Nutrition Page: Input the food you've eaten for nutritional information such as 
 # Competition
 ![](LightWeight/competition.png) <br />
 LightWeight offers a financially responsible solution for college students looking to improve their fitness <br />
-
+Other apps require a subscription for ad-free fitness <br />
 
 # Screens
 ![](LightWeight/Screenshot_1.png)
