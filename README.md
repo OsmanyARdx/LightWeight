@@ -20,11 +20,15 @@ Other apps require a subscription for ad-free fitness <br />
 # Screens
 Main screen with weight graph <br />
 ![Main screen with weight graph](LightWeight/Screenshot_1.png) 
-
+Weight tracking and updating screen<br />
 ![Weight tracking and updating screen](LightWeight/Screenshot_2.png)
+Sidebar (present throughout app)<br />
 ![Sidebar (prevalent throughout app)](LightWeight/Screenshot_3.png)
+Muscle groups on exercise screen<br />
 ![Muscle groups on exercise screen](LightWeight/Screenshot_4.png)
+Exercises on exercise screen<br />
 ![Exercises on exercise screen](LightWeight/Screenshot_5.png)
+Nutrition screen<br />
 ![Nutrition screen](LightWeight/Screenshot_6.png)
 
 # Credits
