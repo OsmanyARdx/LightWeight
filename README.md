@@ -39,6 +39,10 @@ Login screen <br />
 Utilizing the sidebar, one can navigate anywhere from any screen as well! <br/>
 ![](LightWeight/image_2024-12-05_143530143.png) <br/>
 
+# Tips
+You can change your profile picture by clicking the picture at the top right of your homescreen and putting the link to an image there. It will be saved to your account! <br/>
+
+
 # Credits
 Osmany: Project Manager, Software Engineer, UI Designer <br />
 Salar: Software Engineer, UI Designer <br />
