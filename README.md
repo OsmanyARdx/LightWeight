@@ -36,7 +36,7 @@ Login screen <br />
 ![](LightWeight/Screenshot_8.png)<br />
 
 # Transition Diagram
-![](LightWeight/transition_diagram.png) <br/>
+![](LightWeight/transitiondiagram.png) <br/>
 
 # Credits
 Osmany: Project Manager, Software Engineer, UI Designer <br />
