@@ -39,7 +39,7 @@ import kotlinx.coroutines.launch
 fun ChangeProfilePictureScreen(
     userId: Int,
     navController: NavHostController,
-    repository: UserRepository // Add repository parameter
+    repository: UserRepository
 ) {
     val coroutineScope = rememberCoroutineScope()
 
@@ -64,12 +64,12 @@ fun ChangeProfilePictureScreen(
     fun updateProfilePicture() {
         coroutineScope.launch {
             if (newImageUrl.isNotEmpty()) {
-                // Create a new Image object with the updated URL
+
                 val updatedImage = Image(
                     userId = userId,
                     profilePicture = newImageUrl
                 )
-                // Update the image in the Room database via the repository
+
                 repository.updateImage(updatedImage).fold(
                     onSuccess = {
                         repository.insertImage(updatedImage)
@@ -89,8 +89,6 @@ fun ChangeProfilePictureScreen(
     }
 
 
-
-    // UI Content
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -139,15 +137,14 @@ fun ChangeProfilePictureScreen(
                     .padding(16.dp),
                 contentAlignment = Alignment.Center
             ) {
-                // Show the current profile picture
                 Image(
                     painter =
                     rememberAsyncImagePainter(
-                        ImageRequest.Builder // Fallback image if loading fails
+                        ImageRequest.Builder
                             (LocalContext.current).data(data = currentImageUrl)
                             .apply(block = fun ImageRequest.Builder.() {
-                                placeholder(R.drawable.light_weight_logo) // Placeholder while loading
-                                error(R.drawable.light_weight_logo) // Fallback image if loading fails
+                                placeholder(R.drawable.light_weight_logo)
+                                error(R.drawable.light_weight_logo)
                             }).build()
                     ),
                     contentDescription = "Current Profile Picture",
@@ -158,7 +155,6 @@ fun ChangeProfilePictureScreen(
             }
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Input for new profile picture URL
             TextField(
                 value = newImageUrl,
                 onValueChange = { newImageUrl = it },
@@ -178,7 +174,6 @@ fun ChangeProfilePictureScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Button to update the profile picture
             Button(
                 onClick = { updateProfilePicture()
                           },

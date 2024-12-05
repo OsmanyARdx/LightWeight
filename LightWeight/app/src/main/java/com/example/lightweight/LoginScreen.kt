@@ -73,16 +73,13 @@ fun LoginScreen(navController: NavController) {
     )
     suspend fun performLogin() {
         try {
-            // Attempt login via UserRepository
             val result = userRepository.loginUser(username, password)
 
             result.onSuccess { user ->
-                // If login is successful, navigate to user screen
                 println("User found. Navigating to user screen.")
                 navController.navigate("user_screen/${user.id}")
 
             }.onFailure {
-                // If login fails, show error message
                 loginError = it.message ?: "Unknown error"
             }
         } catch (e: Exception) {

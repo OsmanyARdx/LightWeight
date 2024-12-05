@@ -211,7 +211,6 @@ fun UserScreen(navController: NavHostController,userID:Int) {
 
                     item { Spacer(modifier = Modifier.height(12.dp)) }
 
-                    // Graph Display
                     item {
                         Column(
                             modifier = Modifier
@@ -220,7 +219,6 @@ fun UserScreen(navController: NavHostController,userID:Int) {
                             horizontalAlignment = Alignment.CenterHorizontally,
                             verticalArrangement = Arrangement.Top
                         ) {
-                            // Title: Weight Progress
                             Text(
                                 text = "Weight Progress",
                                 fontSize = 16.sp,
@@ -229,7 +227,6 @@ fun UserScreen(navController: NavHostController,userID:Int) {
                                 color = MaterialTheme.colorScheme.onSurface
                             )
 
-                            // Graph Box
                             Box(
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -242,7 +239,7 @@ fun UserScreen(navController: NavHostController,userID:Int) {
                                 contentAlignment = Alignment.Center
                             ) {
                                 if (weightLogs.isNotEmpty()) {
-                                    WeightGraph(weightLogs) // Display the graph if data is available
+                                    WeightGraph(weightLogs)
                                 } else {
                                     Text(
                                         text = "No data available",
@@ -341,29 +338,24 @@ fun UserScreen(navController: NavHostController,userID:Int) {
 }
 @Composable
 fun WeightGraph(weightLogs: List<WeightLog>) {
-    // Sort the weight logs by date (oldest to newest)
     val sortedWeightLogs = weightLogs.sortedBy { it.date }
 
-    // Prepare data for the graph
     val entries = sortedWeightLogs.mapIndexed { index, log ->
         Entry(index.toFloat(), log.weight.toFloat())
     }
 
-    // Create a LineDataSet and configure its appearance
     val lineDataSet = LineDataSet(entries, "Weight Logs").apply {
         color = android.graphics.Color.BLUE
         valueTextColor = android.graphics.Color.BLACK
-        valueTextSize = 12f // Larger text for data values
+        valueTextSize = 12f
         lineWidth = 2f
         circleRadius = 4f
         setCircleColor(android.graphics.Color.RED)
-        mode = LineDataSet.Mode.CUBIC_BEZIER // Smooth curves
+        mode = LineDataSet.Mode.CUBIC_BEZIER
     }
 
-    // Create LineData from the LineDataSet
     val lineData = LineData(lineDataSet)
 
-    // Use AndroidView to render the LineChart
     AndroidView(
         factory = { context ->
             LineChart(context).apply {
@@ -371,24 +363,23 @@ fun WeightGraph(weightLogs: List<WeightLog>) {
                     LinearLayout.LayoutParams.MATCH_PARENT,
                     LinearLayout.LayoutParams.MATCH_PARENT
                 )
-                description.isEnabled = false // Disable chart description
+                description.isEnabled = false
                 setTouchEnabled(true)
-                setPinchZoom(true) // Enable zooming
-                axisRight.isEnabled = false // Disable the right Y-axis
+                setPinchZoom(true)
+                axisRight.isEnabled = false
 
-                // Configure x-axis appearance with date labels
                 xAxis.apply {
                     position = XAxis.XAxisPosition.BOTTOM
-                    textSize = 14f // Larger text for x-axis labels
+                    textSize = 14f
                     textColor = android.graphics.Color.BLACK
-                    granularity = 1f // Ensure labels are spaced properly
-                    setDrawGridLines(false) // Disable gridlines for x-axis
-                    yOffset = 10f // Add spacing below the graph
+                    granularity = 1f
+                    setDrawGridLines(false)
+                    yOffset = 10f
                     valueFormatter = object : ValueFormatter() {
                         override fun getFormattedValue(value: Float): String {
                             val index = value.toInt()
                             return if (index in sortedWeightLogs.indices) {
-                                // Format the date (e.g., MMM dd, yyyy)
+
                                 val dateFormat = SimpleDateFormat("MMM dd, yyyy", Locale.getDefault())
                                 dateFormat.format(Date(sortedWeightLogs[index].date))
                             } else {
@@ -398,29 +389,26 @@ fun WeightGraph(weightLogs: List<WeightLog>) {
                     }
                 }
 
-                // Configure left y-axis appearance
                 axisLeft.apply {
-                    textSize = 14f // Larger text for y-axis labels
+                    textSize = 14f
                     textColor = android.graphics.Color.BLACK
                 }
 
-                // Configure legend appearance
                 legend.apply {
-                    textSize = 16f // Larger text for legend
+                    textSize = 16f
                     textColor = android.graphics.Color.BLACK
                 }
 
-                // Adjust offsets to provide more spacing around the chart
-                setViewPortOffsets(50f, 50f, 50f, 50f) // Padding around the graph
+                setViewPortOffsets(50f, 50f, 50f, 50f)
             }
         },
         modifier = Modifier
             .fillMaxWidth()
-            .height(if (sortedWeightLogs.size > 10) 400.dp else 300.dp) // Expand dynamically
+            .height(if (sortedWeightLogs.size > 10) 400.dp else 300.dp)
             .padding(horizontal = 16.dp, vertical = 8.dp),
         update = { chart ->
             chart.data = lineData
-            chart.invalidate() // Refresh the chart
+            chart.invalidate()
         }
     )
 }

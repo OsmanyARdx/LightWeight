@@ -49,7 +49,7 @@ fun WeightScreen(navController: NavHostController, repository: UserRepository, c
     var errorMessage by remember { mutableStateOf("") }
     var snackbarMessage by remember { mutableStateOf("") }
 
-    // Fetch weight logs for the current user
+
     LaunchedEffect(Unit) {
         isLoading = true
         try {
@@ -135,7 +135,7 @@ fun WeightScreen(navController: NavHostController, repository: UserRepository, c
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Error message display
+
                 if (errorMessage.isNotEmpty()) {
                     Text(
                         text = errorMessage,
@@ -216,7 +216,7 @@ fun WeightScreen(navController: NavHostController, repository: UserRepository, c
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(450.dp) // Height
+                        .height(450.dp)
                         .border(2.dp, MaterialTheme.colorScheme.onSurface, RoundedCornerShape(8.dp))
                         .padding(12.dp)
 

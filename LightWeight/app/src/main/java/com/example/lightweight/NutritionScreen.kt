@@ -15,6 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Color.Companion.Red
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -76,10 +77,25 @@ object RetrofitInstance {
 }
 
 class NutritionViewModel : ViewModel() {
-    private val _responseText = mutableStateOf("Response will appear here")
+
+    private val funnyMessages = listOf(
+        "An apple a day keeps anyone away if you throw it hard enough!",
+        "I’m on a seafood diet. I see food, and I eat it.",
+        "Life is uncertain. Eat dessert first.",
+        "You can’t live a full life on an empty stomach.",
+        "I’m sorry for what I said when I was hungry.",
+        "Chocolate comes from cocoa, which is a tree. That makes it a plant. Therefore, chocolate is a salad.",
+        "Dieting is the penalty for exceeding the feed limit.",
+        "I followed my heart, and it led me to the fridge.",
+        "Nine out of ten people love chocolate. The tenth person always lies.",
+        "My favorite exercise is a cross between a lunge and a crunch... I call it lunch."
+    )
+
+
+    private val _responseText = mutableStateOf(funnyMessages.random())
     val responseText: State<String> = _responseText
 
-    private val _caloriesProgress = mutableStateOf(0f) // Progress as a percentage (0f to 1f)
+    private val _caloriesProgress = mutableStateOf(0f)
     val caloriesProgress: State<Float> = _caloriesProgress
 
     fun fetchNutritionDetails(foods: List<String>) {
@@ -102,7 +118,7 @@ class NutritionViewModel : ViewModel() {
                             Diet Labels: ${data.dietLabels.joinToString(", ")}
                         """.trimIndent()
 
-                        // Calculate progress for calories
+
                         _caloriesProgress.value = (data.calories / 2000f).coerceIn(0f, 1f)
                     }
                 } else {
@@ -131,7 +147,7 @@ fun NutritionScreen(
     var qty3 by remember { mutableStateOf("") }
 
     val responseText by viewModel.responseText
-    val quantities = listOf("1", "2", "3", "1 cup", "2 cups", "3 cups")
+    val quantities = listOf("1", "2", "3","4","5", "1 cup", "2 cups", "3 cups", "4 cups", "5 cups")
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
 
@@ -244,7 +260,7 @@ fun NutritionScreen(
 
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.padding(top = 16.dp)
+                        modifier = Modifier.padding(top = 0.dp)
                     ) {
                         QuantityDropdownSelector(
                             selectedQty = qty3,
@@ -278,7 +294,7 @@ fun NutritionScreen(
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(250.dp) // Height
+                            .height(250.dp)
                             .border(2.dp, MaterialTheme.colorScheme.onSurface, RoundedCornerShape(8.dp))
                             .padding(12.dp)
 
@@ -306,36 +322,44 @@ fun NutritionScreen(
 
                     Spacer(modifier = Modifier.height(16.dp))
 
-                        Text(
-                            text = "2000 Calories/Day",
-                            color = MaterialTheme.colorScheme.onSurface
+                    Text(
+                        text = "2000 Calories/Day",
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier
+                            .size(120.dp)
+                            .padding(16.dp)
+                    ) {
+                                        // calculates the progress %
+                        val progressPercentage = animatedProgress.value * 100
+
+
+                        val progressColor = when {
+                            progressPercentage <= 75f -> Color.Green    // color based on the progress %
+                            progressPercentage <= 90f -> Color.Yellow
+                            else -> Red
+                        }
+
+                        CircularProgressIndicator(
+                            progress = animatedProgress.value,
+                            strokeWidth = 8.dp,
+                            color = progressColor,
+                            modifier = Modifier.fillMaxSize()
                         )
 
-
-                        Box(
-                            contentAlignment = Alignment.Center,
-                            modifier = Modifier
-                                .size(120.dp)
-                                .padding(16.dp)
-                        ) {
-
-                            CircularProgressIndicator(
-                                progress = animatedProgress.value,
-                                strokeWidth = 8.dp,
-                                color = limeGreen,
-                                modifier = Modifier.fillMaxSize()
-                            )
-
-                            Text(
-                                text = "${(animatedProgress.value * 100).toInt()}%",
-                                style = TextStyle(
-                                    fontSize = 30.sp,
-                                    fontWeight = FontWeight.Bold,
-                                    textAlign = TextAlign.Center
-                                ),
-                                color = MaterialTheme.colorScheme.onSurface
-                            )
-                        }
+                        Text(
+                            text = "${progressPercentage.toInt()}%",
+                            style = TextStyle(
+                                fontSize = 30.sp,
+                                fontWeight = FontWeight.Bold,
+                                textAlign = TextAlign.Center
+                            ),
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                    }
                 }
 
             }
