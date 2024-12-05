@@ -42,6 +42,12 @@ Utilizing the sidebar, one can navigate anywhere from any screen as well! <br/>
 # Tips
 You can change your profile picture by clicking the picture at the top right of your homescreen and putting the link to an image there. It will be saved to your account! <br/>
 
+# Feedback-based Improvements
+Based on feedback from 5 users, the critiques we sorted out are as follows: <br/>
+Sorted exercises by muscle group by adding a menu <br/>
+Added the ability to change profile pictures <br/>
+Added a graph to track weight changes for convenience and visual appeal <br/>
+Allowed for the usage of dark-mode as a theme for the app <br/>
 
 # Credits
 Osmany: Project Manager, Software Engineer, UI Designer <br />
