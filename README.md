@@ -36,6 +36,7 @@ Login screen <br />
 ![](LightWeight/Screenshot_8.png)<br />
 
 # Transition Diagram
+Utilizing the sidebar, one can navigate anywhere from any screen as well! <br/>
 ![](LightWeight/image_2024-12-05_143530143.png) <br/>
 
 # Credits
