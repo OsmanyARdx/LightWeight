@@ -48,6 +48,14 @@ Sorted exercises by muscle group by adding a menu <br/>
 Added the ability to change profile pictures <br/>
 Added a graph to track weight changes for convenience and visual appeal <br/>
 Allowed for the usage of dark-mode as a theme for the app <br/>
+Display calorie intake on nutrition screen in terms of daily percentage, according to intake goals. <br/>
+
+# Future Improvements
+Additional improvements to be added based on critique: <br/>
+The ability to favorite specific exercises so that a user can create a custom exercise plan/rotation for themselves<br/>
+The ability to take pictures of food to submit on the nutrition screen<br/>
+The ability to create personalized meal plans for health goals<br/>
+Add wearable functionality<br/>
 
 # Credits
 Osmany: Project Manager, Software Engineer, UI Designer <br />
