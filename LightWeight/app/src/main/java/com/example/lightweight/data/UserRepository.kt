@@ -73,7 +73,7 @@ class UserRepository(private val userDao: UserDao,
             Result.failure(e)
         }
     }
-    // Insert a profile image
+
     suspend fun insertImage(image: Image): Result<Unit> = withContext(Dispatchers.IO) {
         try {
             imageDao.insertImage(image)
@@ -83,7 +83,6 @@ class UserRepository(private val userDao: UserDao,
         }
     }
 
-    // Update image in the database
     suspend fun updateImage(image: Image): Result<Unit> = withContext(Dispatchers.IO) {
         try {
 
@@ -97,7 +96,6 @@ class UserRepository(private val userDao: UserDao,
         }
     }
 
-    // Retrieve image by user ID
     suspend fun getImageByUserId(userId: Int): Result<Image?> = withContext(Dispatchers.IO) {
         try {
             val image = imageDao.getImageByUserId(userId)
@@ -112,7 +110,6 @@ class UserRepository(private val userDao: UserDao,
      * Utility function to hash a password.
      */
     private fun hashPassword1(password: String): String {
-        // Simple example. Replace this with a robust hashing mechanism.
         return hashPassword(password)
     }
 }

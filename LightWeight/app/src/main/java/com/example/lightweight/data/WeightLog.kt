@@ -17,7 +17,7 @@ import androidx.room.PrimaryKey
 )
 data class WeightLog(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
-    val userId: Int, // This references the ID of the User.
+    val userId: Int,
     val weight: String,
     val date: String
 )

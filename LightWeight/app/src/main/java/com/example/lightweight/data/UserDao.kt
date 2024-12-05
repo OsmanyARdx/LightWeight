@@ -23,7 +23,6 @@ interface UserDao {
     @Query("SELECT firstName FROM users WHERE id = :userId")
     suspend fun getFirstNameByUserId(userId: Int): String?
 
-    // Get last name by userId
     @Query("SELECT lastName FROM users WHERE id = :userId")
     suspend fun getLastNameByUserId(userId: Int): String?
 

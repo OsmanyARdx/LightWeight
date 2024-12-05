@@ -17,7 +17,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.Red
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
@@ -80,20 +83,25 @@ class NutritionViewModel : ViewModel() {
 
     private val funnyMessages = listOf(
         "An apple a day keeps anyone away if you throw it hard enough!",
-        "I’m on a seafood diet. I see food, and I eat it.",
-        "Life is uncertain. Eat dessert first.",
+        "I’m on a seafood diet. I see food, and I eat it!",
+        "Life is uncertain. Eat dessert first!",
         "You can’t live a full life on an empty stomach.",
-        "I’m sorry for what I said when I was hungry.",
+        "I’m sorry for what I said when I was hungry...",
         "Chocolate comes from cocoa, which is a tree. That makes it a plant. Therefore, chocolate is a salad.",
         "Dieting is the penalty for exceeding the feed limit.",
-        "I followed my heart, and it led me to the fridge.",
+        "I followed my heart, and it led me to the fridge...",
         "Nine out of ten people love chocolate. The tenth person always lies.",
+        "Please tell me that's you last Kitkat...",
         "My favorite exercise is a cross between a lunge and a crunch... I call it lunch."
     )
 
-
-    private val _responseText = mutableStateOf(funnyMessages.random())
-    val responseText: State<String> = _responseText
+    private val _responseText = mutableStateOf(
+        AnnotatedString(
+            text = funnyMessages.random(),
+            spanStyle = SpanStyle(fontStyle = FontStyle.Italic)
+        )
+    )
+    val responseText: State<AnnotatedString> = _responseText
 
     private val _caloriesProgress = mutableStateOf(0f)
     val caloriesProgress: State<Float> = _caloriesProgress
@@ -109,23 +117,29 @@ class NutritionViewModel : ViewModel() {
                 val response = RetrofitInstance.api.getNutritionDetails(request).awaitResponse()
                 if (response.isSuccessful) {
                     response.body()?.let { data ->
-                        _responseText.value = """
-                            Calories: ${data.calories}
-                            Yield: ${data.yield}
-                            Total CO2 Emissions: ${data.totalCO2Emissions}
-                            CO2 Emissions Class: ${data.co2EmissionsClass}
-                            Total Weight: ${data.totalWeight}
-                            Diet Labels: ${data.dietLabels.joinToString(", ")}
-                        """.trimIndent()
+                        _responseText.value = AnnotatedString(
+                            text = """
+                                Calories: ${data.calories}
+                                Yield: ${data.yield}
+                                Total CO2 Emissions: ${data.totalCO2Emissions}
+                                CO2 Emissions Class: ${data.co2EmissionsClass}
+                                Total Weight: ${data.totalWeight}
+                                Diet Labels: ${data.dietLabels.joinToString(", ")}
+                            """.trimIndent()
+                        )
 
 
                         _caloriesProgress.value = (data.calories / 2000f).coerceIn(0f, 1f)
                     }
                 } else {
-                    _responseText.value = "Error: ${response.errorBody()?.string() ?: "Unknown error"}"
+                    _responseText.value = AnnotatedString(
+                        text = "Error: ${response.errorBody()?.string() ?: "Unknown error"}"
+                    )
                 }
             } catch (e: Exception) {
-                _responseText.value = "Exception: ${e.message}"
+                _responseText.value = AnnotatedString(
+                    text = "Exception: ${e.message}"
+                )
             }
         }
     }
